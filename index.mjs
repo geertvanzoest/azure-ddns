@@ -24,11 +24,11 @@ const CONFIG = Object.freeze({
   resourceGroup:  env('AZURE_RESOURCE_GROUP'),
   dnsZone:        env('AZURE_DNS_ZONE'),
   dnsRecord:      env('AZURE_DNS_RECORD', '@'),
-  ttl:            Number(env('DNS_TTL', '300')),
+  ttl:            envInt('DNS_TTL', 300),
   stateDir:       env('STATE_DIR', '/run/ns4j'),
-  checkInterval:  Number(env('CHECK_INTERVAL_MS', '300000')),   // 5 min
-  forceInterval:  Number(env('FORCE_INTERVAL_MS', '86400000')), // 24 h
-  requestTimeout: Number(env('REQUEST_TIMEOUT_MS', '10000')),   // 10 s
+  checkInterval:  envInt('CHECK_INTERVAL_MS', 300_000),   // 5 min
+  forceInterval:  envInt('FORCE_INTERVAL_MS', 86_400_000), // 24 h
+  requestTimeout: envInt('REQUEST_TIMEOUT_MS', 10_000),   // 10 s
   daemon:         env('DAEMON_MODE', 'false') === 'true',
 });
 
@@ -45,6 +45,11 @@ const IP_SERVICES = [
 
 const IPV4_RE = /^(\d{1,3}\.){3}\d{1,3}$/;
 
+function isValidIPv4(ip) {
+  if (!isValidIPv4(ip)) return false;
+  return ip.split('.').every(o => { const n = Number(o); return n >= 0 && n <= 255; });
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -57,10 +62,26 @@ function env(key, fallback) {
   process.exit(1);
 }
 
+function envInt(key, fallback) {
+  const val = Number(env(key, String(fallback)));
+  if (!Number.isFinite(val) || val < 0) {
+    console.error(`[fatal] Invalid numeric value for ${key}: "${env(key, String(fallback))}"`);
+    process.exit(1);
+  }
+  return val;
+}
+
 function log(level, msg) {
   const ts = new Date().toISOString();
   const fn = level === 'error' ? console.error : console.log;
   fn(`[${ts}] [${level}] ${msg}`);
+}
+
+class HttpError extends Error {
+  constructor(status, body) {
+    super(`HTTP ${status}: ${body}`);
+    this.status = status;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -116,7 +137,7 @@ async function acquireToken(state) {
 
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`Token request failed (${res.status}): ${body}`);
+    throw new HttpError(res.status, body);
   }
 
   const data = await res.json();
@@ -140,7 +161,7 @@ async function detectPublicIp() {
       if (!res.ok) continue;
 
       const ip = (await res.text()).trim();
-      if (IPV4_RE.test(ip)) return ip;
+      if (isValidIPv4(ip)) return { ip, source: url };
 
       log('warn', `Invalid IP response from ${url}: "${ip}"`);
     } catch (err) {
@@ -151,16 +172,19 @@ async function detectPublicIp() {
 }
 
 async function detectAndConfirmIp(currentIp) {
-  const ip = await detectPublicIp();
-  if (!ip) return null;
+  const result = await detectPublicIp();
+  if (!result) return null;
+
+  const { ip, source } = result;
 
   // If IP hasn't changed, no confirmation needed
   if (ip === currentIp) return ip;
 
-  // IP changed — confirm with a different service
+  // IP changed — confirm with a *different* service
   log('info', `IP change detected (${currentIp || 'none'} -> ${ip}), confirming...`);
 
   for (const url of IP_SERVICES) {
+    if (url === source) continue; // skip the original source
     try {
       const res = await fetchWithTimeout(url);
       if (!res.ok) continue;
@@ -183,12 +207,13 @@ async function detectAndConfirmIp(currentIp) {
 // ---------------------------------------------------------------------------
 
 function dnsApiUrl() {
+  const e = encodeURIComponent;
   const { subscriptionId, resourceGroup, dnsZone, dnsRecord } = CONFIG;
   return (
-    `https://management.azure.com/subscriptions/${subscriptionId}` +
-    `/resourceGroups/${resourceGroup}` +
-    `/providers/Microsoft.Network/dnsZones/${dnsZone}` +
-    `/A/${dnsRecord}?api-version=2018-05-01`
+    `https://management.azure.com/subscriptions/${e(subscriptionId)}` +
+    `/resourceGroups/${e(resourceGroup)}` +
+    `/providers/Microsoft.Network/dnsZones/${e(dnsZone)}` +
+    `/A/${e(dnsRecord)}?api-version=2018-05-01`
   );
 }
 
@@ -211,7 +236,7 @@ async function updateDnsRecord(token, ip) {
 
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`DNS update failed (${res.status}): ${body}`);
+    throw new HttpError(res.status, body);
   }
 
   const data = await res.json();
@@ -241,8 +266,8 @@ async function withRetry(fn, { retries = 3, baseDelay = 5000, label = 'operation
     try {
       return await fn();
     } catch (err) {
-      // Don't retry auth errors or client errors (except 429)
-      if (err.message?.includes('(401)') || err.message?.includes('(403)')) throw err;
+      // Don't retry auth errors
+      if (err instanceof HttpError && (err.status === 401 || err.status === 403)) throw err;
 
       if (attempt === retries) throw err;
 

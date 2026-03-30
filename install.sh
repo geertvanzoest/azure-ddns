@@ -26,9 +26,10 @@ fi
 # Install application
 echo "==> Copying files to ${INSTALL_DIR}"
 sudo mkdir -p "$INSTALL_DIR"
-sudo cp index.mjs "$INSTALL_DIR/"
+sudo cp index.mjs package.json "$INSTALL_DIR/"
 sudo chown -R root:ns4j "$INSTALL_DIR"
 sudo chmod 750 "$INSTALL_DIR"
+sudo chmod 640 "$INSTALL_DIR/index.mjs" "$INSTALL_DIR/package.json"
 
 # Configuration
 if [ ! -f "${CONFIG_DIR}/.env" ]; then
