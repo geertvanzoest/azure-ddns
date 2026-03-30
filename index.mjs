@@ -46,7 +46,7 @@ const IP_SERVICES = [
 const IPV4_RE = /^(\d{1,3}\.){3}\d{1,3}$/;
 
 function isValidIPv4(ip) {
-  if (!isValidIPv4(ip)) return false;
+  if (!IPV4_RE.test(ip)) return false;
   return ip.split('.').every(o => { const n = Number(o); return n >= 0 && n <= 255; });
 }
 
@@ -355,9 +355,12 @@ async function main() {
     }
   };
 
-  await tick(); // immediate first run
-  setInterval(tick, CONFIG.checkInterval);
+  // Serial scheduling: next run starts only after previous completes
   log('info', `Daemon running — checking every ${CONFIG.checkInterval / 1000}s`);
+  while (true) {
+    await tick();
+    await sleep(CONFIG.checkInterval);
+  }
 }
 
 main();
