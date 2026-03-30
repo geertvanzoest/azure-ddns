@@ -4,6 +4,7 @@
   "description": "Zero-dependency Azure DDNS client for Raspberry Pi",
   "type": "module",
   "main": "index.mjs",
+  "bin": "index.mjs",
   "scripts": {
     "start": "node index.mjs",
     "check": "node --check index.mjs"
