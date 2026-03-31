@@ -45,7 +45,17 @@ Het Azure DNS A-record is altijd actueel met het huidige publieke IP-adres van h
 
 ### Active
 
-(Geen actieve requirements — next milestone nog niet gedefinieerd)
+(Wordt gedefinieerd in v1.1 requirements)
+
+## Current Milestone: v1.1 ddns4j — CI, Docs & Rename
+
+**Goal:** Repo en code hernoemen van ns4j naar ddns4j, GitHub Actions CI toevoegen, en uitgebreide documentatie schrijven voor zelfstandige overdracht aan de Pi-beheerder.
+
+**Target features:**
+- Rename ns4j → ddns4j (script, repo, alle referenties)
+- GitHub Actions workflow voor automatisch draaien van bats tests
+- README.md met project-overzicht
+- Install/usage/configuratie documentatie gericht op de Pi-beheerder
 
 ### Out of Scope
 
@@ -92,4 +102,4 @@ UAT: 9/9 tests passed, 0 issues.
 This document evolves at phase transitions and milestone boundaries.
 
 ---
-*Last updated: 2026-03-31 after v1.0 milestone*
+*Last updated: 2026-03-31 after v1.1 milestone start*
