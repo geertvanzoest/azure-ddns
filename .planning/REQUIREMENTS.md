@@ -15,8 +15,8 @@ Requirements for rename, CI, and documentation milestone.
 
 ### CI
 
-- [ ] **CI-01**: GitHub Actions workflow die bats tests automatisch draait bij push en PR
-- [ ] **CI-02**: CI draait op Linux (Ubuntu) met bash, curl, jq en bats-core geinstalleerd
+- [x] **CI-01**: GitHub Actions workflow die bats tests automatisch draait bij push en PR
+- [x] **CI-02**: CI draait op Linux (Ubuntu) met bash, curl, jq en bats-core geinstalleerd
 
 ### Documentatie
 
@@ -51,8 +51,8 @@ Deferred from v1.0:
 | REN-01 | Phase 3 | Complete |
 | REN-02 | Phase 3 | Complete |
 | REN-03 | Phase 3 | Complete |
-| CI-01 | Phase 4 | Pending |
-| CI-02 | Phase 4 | Pending |
+| CI-01 | Phase 4 | Complete |
+| CI-02 | Phase 4 | Complete |
 | DOC-01 | Phase 5 | Pending |
 | DOC-02 | Phase 5 | Pending |
 | DOC-03 | Phase 5 | Pending |

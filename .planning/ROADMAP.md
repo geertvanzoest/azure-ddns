@@ -18,7 +18,7 @@
 ### v1.1 ddns4j — CI, Docs & Rename
 
 - [x] **Phase 3: Rename naar ddns4j** - Script, interne referenties en tests hernoemen van ns4j naar ddns4j
-- [ ] **Phase 4: CI pipeline** - GitHub Actions workflow die bats tests automatisch draait
+- [x] **Phase 4: CI pipeline** - GitHub Actions workflow die bats tests automatisch draait (completed 2026-03-31)
 - [ ] **Phase 5: Documentatie** - README en gebruikersdocumentatie voor zelfstandige overdracht
 
 ## Phase Details
@@ -44,10 +44,10 @@ Plans:
 **Goal**: Elke push en PR wordt automatisch gevalideerd door de test suite op een schone Linux-omgeving
 **Depends on**: Phase 3
 **Requirements**: CI-01, CI-02
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 04-01-PLAN.md — GitHub Actions CI workflow met bats tests
+- [x] 04-01-PLAN.md — GitHub Actions CI workflow met bats tests
 
 **Success Criteria** (what must be TRUE):
 
@@ -78,5 +78,5 @@ Plans:
 | 1. Werkend kern-script | v1.0 | 1/1 | Complete | 2026-03-31 |
 | 2. Hardening en operationele robuustheid | v1.0 | 2/2 | Complete | 2026-03-31 |
 | 3. Rename naar ddns4j | v1.1 | 1/1 | Complete | 2026-03-31 |
-| 4. CI pipeline | v1.1 | 0/1 | Planning | - |
+| 4. CI pipeline | v1.1 | 1/1 | Complete   | 2026-03-31 |
 | 5. Documentatie | v1.1 | 0/? | Not started | - |
