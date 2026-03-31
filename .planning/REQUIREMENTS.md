@@ -38,7 +38,7 @@ Deferred from v1.0:
 ## Out of Scope
 
 | Feature | Reason |
-|---------|--------|
+| ------- | ------ |
 | GitHub repo rename | Handmatig door eigenaar via GitHub Settings |
 | man page | README + troubleshooting volstaat |
 | Automatische releases/packaging | Overkill voor een enkel script |
@@ -46,15 +46,25 @@ Deferred from v1.0:
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
-|-------------|-------|--------|
+| ----------- | ----- | ------ |
+| REN-01 | Phase 3 | Pending |
+| REN-02 | Phase 3 | Pending |
+| REN-03 | Phase 3 | Pending |
+| CI-01 | Phase 4 | Pending |
+| CI-02 | Phase 4 | Pending |
+| DOC-01 | Phase 5 | Pending |
+| DOC-02 | Phase 5 | Pending |
+| DOC-03 | Phase 5 | Pending |
+| DOC-04 | Phase 5 | Pending |
+| DOC-05 | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1.1 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10
+- Mapped to phases: 10
+- Unmapped: 0
 
 ---
+
 *Requirements defined: 2026-03-31*
