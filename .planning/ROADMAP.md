@@ -28,14 +28,16 @@
 **Goal**: Het project draait volledig onder de naam ddns4j — script, lock files, logs, en tests refereren nergens meer aan ns4j
 **Depends on**: Phase 2 (v1.0 shipped)
 **Requirements**: REN-01, REN-02, REN-03
+**Plans:** 1 plan
+
+Plans:
+- [ ] 03-01-PLAN.md — Hernaam script, lock file en test suite van ns4j naar ddns4j
 
 **Success Criteria** (what must be TRUE):
 
   1. Het script-bestand heet `ddns4j` en is uitvoerbaar
   2. Lock file, log output en variabelenamen bevatten `ddns4j` in plaats van `ns4j`
   3. Alle bats tests draaien tegen `ddns4j` en slagen
-
-**Plans**: TBD
 
 ### Phase 4: CI pipeline
 
@@ -73,6 +75,6 @@
 | ----- | --------- | -------------- | ------ | --------- |
 | 1. Werkend kern-script | v1.0 | 1/1 | Complete | 2026-03-31 |
 | 2. Hardening en operationele robuustheid | v1.0 | 2/2 | Complete | 2026-03-31 |
-| 3. Rename naar ddns4j | v1.1 | 0/? | Not started | - |
+| 3. Rename naar ddns4j | v1.1 | 0/1 | Planned | - |
 | 4. CI pipeline | v1.1 | 0/? | Not started | - |
 | 5. Documentatie | v1.1 | 0/? | Not started | - |
