@@ -9,9 +9,9 @@ Requirements for rename, CI, and documentation milestone.
 
 ### Rename
 
-- [ ] **REN-01**: Script-bestand hernoemen van `ns4j` naar `ddns4j`
-- [ ] **REN-02**: Alle interne referenties naar ns4j (lock file, log output, variabelen) hernoemen naar ddns4j
-- [ ] **REN-03**: Test suite aangepast aan de nieuwe scriptnaam ddns4j
+- [x] **REN-01**: Script-bestand hernoemen van `ns4j` naar `ddns4j`
+- [x] **REN-02**: Alle interne referenties naar ns4j (lock file, log output, variabelen) hernoemen naar ddns4j
+- [x] **REN-03**: Test suite aangepast aan de nieuwe scriptnaam ddns4j
 
 ### CI
 
@@ -48,9 +48,9 @@ Deferred from v1.0:
 
 | Requirement | Phase | Status |
 | ----------- | ----- | ------ |
-| REN-01 | Phase 3 | Pending |
-| REN-02 | Phase 3 | Pending |
-| REN-03 | Phase 3 | Pending |
+| REN-01 | Phase 3 | Complete |
+| REN-02 | Phase 3 | Complete |
+| REN-03 | Phase 3 | Complete |
 | CI-01 | Phase 4 | Pending |
 | CI-02 | Phase 4 | Pending |
 | DOC-01 | Phase 5 | Pending |
