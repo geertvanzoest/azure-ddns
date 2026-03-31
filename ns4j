@@ -84,6 +84,12 @@ validate_config() {
     if [[ "$missing" -eq 1 ]]; then
         exit "${EXIT_CONFIG}"
     fi
+
+    debug "Config: DNS_ZONE_NAME=${DNS_ZONE_NAME}, DNS_RECORD_NAME=${DNS_RECORD_NAME}"
+    debug "Config: AZURE_TENANT_ID=${AZURE_TENANT_ID}, AZURE_CLIENT_ID=${AZURE_CLIENT_ID}"
+    debug "Config: AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID}"
+    debug "Config: AZURE_RESOURCE_GROUP=${AZURE_RESOURCE_GROUP}"
+    debug "Config: DNS_TTL=${DNS_TTL:-300}"
 }
 
 get_access_token() {
@@ -118,34 +124,36 @@ get_access_token() {
         exit "${EXIT_AUTH}"
     fi
 
+    debug "OAuth2 token verkregen (HTTP ${http_code})"
     echo "$access_token"
 }
 
 get_public_ip() {
-    local response
-    response=$(curl --silent --show-error --max-time 10 \
-        --write-out "\n%{http_code}" \
-        "${IP_SERVICE}")
+    local ip http_code response body
+    for service in "${IP_SERVICES[@]}"; do
+        response=$(curl --silent --show-error --max-time 10 \
+            --write-out "\n%{http_code}" "$service" 2>/dev/null) || {
+            debug "Service ${service} niet bereikbaar"
+            continue
+        }
+        http_code=$(echo "$response" | tail -n1)
+        body=$(echo "$response" | sed '$d')
+        ip=$(echo "$body" | tr -d '[:space:]')
 
-    local http_code
-    http_code=$(echo "$response" | tail -n1)
-    local body
-    body=$(echo "$response" | sed '$d')
-
-    if [[ "$http_code" != "200" ]]; then
-        log "ERROR" "IP-detectie mislukt (HTTP ${http_code}): ${body}"
-        exit "${EXIT_IP}"
-    fi
-
-    local ip
-    ip=$(echo "$body" | tr -d '[:space:]')
-
-    if [[ -z "$ip" ]]; then
-        log "ERROR" "Geen IP-adres ontvangen van ${IP_SERVICE}"
-        exit "${EXIT_IP}"
-    fi
-
-    echo "$ip"
+        if [[ "$http_code" != "200" ]]; then
+            debug "Service ${service}: HTTP ${http_code}"
+            continue
+        fi
+        if [[ ! "$ip" =~ $IP_REGEX ]]; then
+            debug "Service ${service}: ongeldig IP '${ip}'"
+            continue
+        fi
+        debug "Service ${service}: IP=${ip}"
+        echo "$ip"
+        return 0
+    done
+    log "ERROR" "Geen geldige IP-service beschikbaar (geprobeerd: ${IP_SERVICES[*]})"
+    exit "${EXIT_IP}"
 }
 
 get_dns_record() {
@@ -166,8 +174,10 @@ get_dns_record() {
     if [[ "$http_code" == "200" ]]; then
         local current_ip
         current_ip=$(echo "$body" | jq -r '.properties.ARecords[0].ipv4Address // empty')
+        debug "DNS record gevonden: ${current_ip}"
         echo "$current_ip"
     elif [[ "$http_code" == "404" ]]; then
+        debug "Geen bestaand DNS record (HTTP 404)"
         echo ""
     else
         log "ERROR" "DNS record ophalen mislukt (HTTP ${http_code}): ${body}"
@@ -187,6 +197,8 @@ update_dns() {
         --arg ip "$new_ip" \
         --argjson ttl "$ttl" \
         '{properties: {TTL: $ttl, ARecords: [{ipv4Address: $ip}]}}')
+
+    debug "DNS update: ${DNS_RECORD_NAME}.${DNS_ZONE_NAME} -> ${new_ip} (TTL: ${ttl})"
 
     local response
     response=$(curl --silent --show-error --max-time 10 \
@@ -211,6 +223,7 @@ update_dns() {
 }
 
 main() {
+    parse_args "$@"
     validate_config
 
     local access_token
@@ -222,9 +235,13 @@ main() {
     local current_ip
     current_ip=$(get_dns_record "$access_token")
 
-    if [[ "$current_ip" == "$public_ip" ]]; then
+    if [[ "$current_ip" == "$public_ip" ]] && [[ "$FORCE" -eq 0 ]]; then
         log "INFO" "IP ongewijzigd (${public_ip})"
         exit "${EXIT_OK}"
+    fi
+
+    if [[ "$FORCE" -eq 1 ]]; then
+        debug "Force modus: update ongeacht IP-vergelijking"
     fi
 
     if [[ -z "$current_ip" ]]; then
