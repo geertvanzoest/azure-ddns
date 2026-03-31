@@ -60,6 +60,10 @@ Plans:
 **Goal**: Een Pi-beheerder kan ddns4j zelfstandig installeren, configureren en troubleshooten zonder hulp van de ontwikkelaar
 **Depends on**: Phase 4
 **Requirements**: DOC-01, DOC-02, DOC-03, DOC-04, DOC-05
+**Plans:** 1 plan
+
+Plans:
+- [ ] 05-01-PLAN.md — Schrijf complete README.md met installatie, configuratie, gebruik en troubleshooting
 
 **Success Criteria** (what must be TRUE):
 
@@ -69,8 +73,6 @@ Plans:
   4. Gebruiksinstructies tonen handmatig draaien, cron job instellen, --force en VERBOSE=1
   5. Troubleshooting sectie documenteert alle exit codes (0-4) met oorzaken en oplossingen
 
-**Plans**: TBD
-
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -79,4 +81,4 @@ Plans:
 | 2. Hardening en operationele robuustheid | v1.0 | 2/2 | Complete | 2026-03-31 |
 | 3. Rename naar ddns4j | v1.1 | 1/1 | Complete | 2026-03-31 |
 | 4. CI pipeline | v1.1 | 1/1 | Complete   | 2026-03-31 |
-| 5. Documentatie | v1.1 | 0/? | Not started | - |
+| 5. Documentatie | v1.1 | 0/1 | Planning complete | - |
