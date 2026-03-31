@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: ddns4j — CI, Docs & Rename
 status: verifying
 stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-31T10:56:30.377Z"
+last_updated: "2026-03-31T11:14:10.462Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 3
