@@ -41,10 +41,11 @@ Plans:
   2. Script valt automatisch terug op een alternatieve IP-service wanneer de primaire faalt
   3. Script voorkomt gelijktijdige uitvoering via flock lock file
   4. Script ondersteunt --force om altijd te updaten en VERBOSE=1 voor extra debug output
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md -- Implementeer alle hardening-features in het ns4j script (IP-validatie, fallback, flock, --force, verbose)
+- [ ] 02-02-PLAN.md -- Schrijf bats-core test suite voor alle Phase 2 requirements
 
 ## Progress
 
@@ -54,4 +55,4 @@ Phases execute in numeric order: 1 -> 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Werkend kern-script | 0/1 | Not started | - |
-| 2. Hardening en operationele robuustheid | 0/0 | Not started | - |
+| 2. Hardening en operationele robuustheid | 0/2 | Not started | - |
