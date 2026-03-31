@@ -22,7 +22,16 @@ Het Azure DNS A-record is altijd actueel met het huidige publieke IP-adres van h
 
 ### Active
 
-(All initial requirements validated in Phase 1)
+(All requirements validated through Phase 2)
+
+**Phase 2 validations:**
+
+- [x] IP-validatie met strikte IPv4 regex — Validated in Phase 2: hardening-en-operationele-robuustheid
+- [x] Automatische fallback naar alternatieve IP-service — Validated in Phase 2: hardening-en-operationele-robuustheid
+- [x] Configureerbare TTL via DNS_TTL env var — Validated in Phase 2: hardening-en-operationele-robuustheid
+- [x] Concurrent execution preventie via flock — Validated in Phase 2: hardening-en-operationele-robuustheid
+- [x] --force flag en VERBOSE=1 debug modus — Validated in Phase 2: hardening-en-operationele-robuustheid
+- [x] Bats-core test suite (27 tests) — Validated in Phase 2: hardening-en-operationele-robuustheid
 
 ### Out of Scope
 
@@ -61,6 +70,9 @@ Het Azure DNS A-record is altijd actueel met het huidige publieke IP-adres van h
 | Cron job i.p.v. daemon/systemd | Simpelst mogelijke uitvoeringsmodel, Pi-friendly | Validated Phase 1 |
 | Env vars i.p.v. config file | Past bij cron-model, geen file management nodig | Validated Phase 1 |
 | Externe IP-service (icanhazip.com) | Cloudflare-backed, betrouwbaar, sneller dan alternatieven | Validated Phase 1 |
+| IP fallback cascade (icanhazip → checkip.amazonaws) | Twee betrouwbare providers, automatische failover | Validated Phase 2 |
+| flock --nonblock voor concurrent execution preventie | Simpelste locking-mechanisme, standaard op Linux | Validated Phase 2 |
+| VERBOSE env var i.p.v. --verbose flag | Env vars passen bij cron-model, geen argument parsing nodig | Validated Phase 2 |
 
 ## Evolution
 
@@ -80,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-31 after Phase 1 completion*
+*Last updated: 2026-03-31 after Phase 2 completion*
