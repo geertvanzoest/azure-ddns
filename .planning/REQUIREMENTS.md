@@ -20,11 +20,11 @@ Requirements for rename, CI, and documentation milestone.
 
 ### Documentatie
 
-- [ ] **DOC-01**: README.md met project-overzicht, features, en quick start
-- [ ] **DOC-02**: Installatie-instructies: dependencies, script plaatsen, permissions
-- [ ] **DOC-03**: Configuratie-instructies: Azure Service Principal aanmaken, env vars instellen
-- [ ] **DOC-04**: Gebruiksinstructies: handmatig draaien, cron job instellen, --force, VERBOSE=1
-- [ ] **DOC-05**: Troubleshooting: exit codes, veelvoorkomende fouten, debug modus
+- [x] **DOC-01**: README.md met project-overzicht, features, en quick start
+- [x] **DOC-02**: Installatie-instructies: dependencies, script plaatsen, permissions
+- [x] **DOC-03**: Configuratie-instructies: Azure Service Principal aanmaken, env vars instellen
+- [x] **DOC-04**: Gebruiksinstructies: handmatig draaien, cron job instellen, --force, VERBOSE=1
+- [x] **DOC-05**: Troubleshooting: exit codes, veelvoorkomende fouten, debug modus
 
 ## Future Requirements
 
@@ -53,11 +53,11 @@ Deferred from v1.0:
 | REN-03 | Phase 3 | Complete |
 | CI-01 | Phase 4 | Complete |
 | CI-02 | Phase 4 | Complete |
-| DOC-01 | Phase 5 | Pending |
-| DOC-02 | Phase 5 | Pending |
-| DOC-03 | Phase 5 | Pending |
-| DOC-04 | Phase 5 | Pending |
-| DOC-05 | Phase 5 | Pending |
+| DOC-01 | Phase 5 | Complete |
+| DOC-02 | Phase 5 | Complete |
+| DOC-03 | Phase 5 | Complete |
+| DOC-04 | Phase 5 | Complete |
+| DOC-05 | Phase 5 | Complete |
 
 **Coverage:**
 

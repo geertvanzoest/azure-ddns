@@ -63,7 +63,7 @@ Plans:
 **Plans:** 1 plan
 
 Plans:
-- [ ] 05-01-PLAN.md — Schrijf complete README.md met installatie, configuratie, gebruik en troubleshooting
+- [x] 05-01-PLAN.md — Schrijf complete README.md met installatie, configuratie, gebruik en troubleshooting
 
 **Success Criteria** (what must be TRUE):
 
