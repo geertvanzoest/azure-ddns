@@ -38,7 +38,7 @@ log() {
 
 debug() {
     if [[ "${VERBOSE:-0}" == "1" ]]; then
-        log "DEBUG" "$@"
+        log "DEBUG" "$@" >&2
     fi
 }
 

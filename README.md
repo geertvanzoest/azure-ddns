@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/geertvanzoest/azure-ddns/actions/workflows/test.yml/badge.svg)
 
-Een lightweight bash script dat als DDNS-client werkt voor Azure DNS. Het detecteert het publieke IP-adres van het netwerk via een externe service en update een A-record in Azure DNS via de REST API. Ontworpen om als cron job op een Raspberry Pi te draaien met zero dependencies buiten standaard systeemtools.
+Een lightweight bash script dat als DDNS-client werkt voor Azure DNS. Het detecteert het publieke IP-adres van het netwerk via een externe service en update een A-record in Azure DNS via de REST API. Ontworpen om als cron job op een Raspberry Pi te draaien met minimale dependencies (bash, curl, jq).
 
 ## Features
 
@@ -206,11 +206,13 @@ Dit toont:
 
 **"Andere instantie draait, overgeslagen"**
 
-Een vorige run is nog bezig. Wacht tot deze klaar is. Als het script vasthangt, verwijder handmatig de lock file:
+Een vorige run is nog bezig. Wacht tot deze klaar is. Controleer of er een actief proces draait:
 
 ```bash
-rm /tmp/azure-ddns.lock
+ps aux | grep azure-ddns
 ```
+
+Als er geen proces draait maar de melding blijft komen, herstart de Pi of wacht tot de volgende reboot (flock wordt automatisch vrijgegeven bij proceseinde).
 
 **HTTP 401 bij token request (exit code 3)**
 
