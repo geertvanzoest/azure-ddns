@@ -27,10 +27,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Script weigert te starten wanneer een verplichte env var ontbreekt, met beschrijvende foutmelding per variabele
   4. Script geeft exit code 0 bij succes, en specifieke non-zero codes (1-4) bij verschillende fouttypen
   5. Succesberichten verschijnen op stdout, fouten op stderr
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md -- Bouw het complete ns4j script met alle functies en validatie
 
 ### Phase 2: Hardening en operationele robuustheid
 **Goal**: Script is productieklaar voor onbeheerde cron-uitvoering met bescherming tegen edge cases en debugging-mogelijkheden
@@ -53,5 +53,5 @@ Phases execute in numeric order: 1 -> 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Werkend kern-script | 0/0 | Not started | - |
+| 1. Werkend kern-script | 0/1 | Not started | - |
 | 2. Hardening en operationele robuustheid | 0/0 | Not started | - |
