@@ -1,0 +1,23 @@
+{
+  "name": "ns4j",
+  "version": "1.0.0",
+  "description": "Zero-dependency Azure DDNS client for Raspberry Pi",
+  "type": "module",
+  "main": "index.mjs",
+  "bin": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs",
+    "check": "node --check index.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "azure",
+    "dns",
+    "ddns",
+    "dynamic-dns",
+    "raspberry-pi"
+  ],
+  "license": "MIT"
+}

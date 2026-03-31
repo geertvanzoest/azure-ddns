@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-31T05:43:32.701Z"
-last_activity: 2026-03-30 -- Roadmap created
+status: verifying
+stopped_at: Completed 01-01-PLAN.md
+last_updated: "2026-03-31T06:03:56.422Z"
+last_activity: 2026-03-31
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
   percent: 0
 ---
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-30)
 
 **Core value:** Het Azure DNS A-record is altijd actueel met het huidige publieke IP-adres van het thuisnetwerk.
-**Current focus:** Phase 1: Werkend kern-script
+**Current focus:** Phase 01 — werkend-kern-script
 
 ## Current Position
 
-Phase: 1 of 2 (Werkend kern-script)
-Plan: 0 of 0 in current phase
-Status: Ready to plan
-Last activity: 2026-03-30 -- Roadmap created
+Phase: 01 (werkend-kern-script) — EXECUTING
+Plan: 1 of 1
+Status: Phase complete — ready for verification
+Last activity: 2026-03-31
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P01 | 3min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
 - Roadmap: 2 fasen (coarse granularity) -- kern-script eerst, hardening daarna
+- [Phase 01]: Env var namen per CLAUDE.md: DNS_ZONE_NAME/DNS_RECORD_NAME (niet AZURE_DNS_ZONE/AZURE_DNS_RECORD)
+- [Phase 01]: Alle jq -r calls met // empty fallback ter voorkoming van null string doorgifte
 
 ### Pending Todos
 
@@ -72,6 +75,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-31T05:43:32.698Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-werkend-kern-script/01-CONTEXT.md
+Last session: 2026-03-31T06:03:56.420Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None

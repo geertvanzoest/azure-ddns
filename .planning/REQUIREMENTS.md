@@ -9,31 +9,31 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### IP-detectie
 
-- [ ] **IP-01**: Script haalt het huidige publieke IPv4-adres op via een externe service (icanhazip.com)
+- [x] **IP-01**: Script haalt het huidige publieke IPv4-adres op via een externe service (icanhazip.com)
 - [ ] **IP-02**: Script valideert het opgehaalde IP-adres met een IPv4 regex check
-- [ ] **IP-03**: Script vergelijkt het huidige IP met het bestaande DNS record en skipt update als ongewijzigd
+- [x] **IP-03**: Script vergelijkt het huidige IP met het bestaande DNS record en skipt update als ongewijzigd
 - [ ] **IP-04**: Script valt terug op een alternatieve IP-service (checkip.amazonaws.com) als de primaire faalt
 
 ### Azure Authenticatie
 
-- [ ] **AUTH-01**: Script verkrijgt een OAuth2 access token via Service Principal client credentials flow
-- [ ] **AUTH-02**: Script controleert HTTP response codes van alle Azure API calls
+- [x] **AUTH-01**: Script verkrijgt een OAuth2 access token via Service Principal client credentials flow
+- [x] **AUTH-02**: Script controleert HTTP response codes van alle Azure API calls
 
 ### DNS Management
 
-- [ ] **DNS-01**: Script haalt het huidige A-record op uit Azure DNS via REST API (GET)
-- [ ] **DNS-02**: Script update het A-record in Azure DNS via REST API (PUT) wanneer het IP gewijzigd is
+- [x] **DNS-01**: Script haalt het huidige A-record op uit Azure DNS via REST API (GET)
+- [x] **DNS-02**: Script update het A-record in Azure DNS via REST API (PUT) wanneer het IP gewijzigd is
 - [ ] **DNS-03**: TTL is configureerbaar via environment variable (AZURE_DNS_TTL) met default 300 seconden
 
 ### Configuratie
 
-- [ ] **CFG-01**: Alle configuratie via environment variables (AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AZURE_DNS_ZONE, AZURE_DNS_RECORD)
-- [ ] **CFG-02**: Script valideert alle verplichte env vars bij startup en geeft beschrijvende foutmelding per ontbrekende variabele
+- [x] **CFG-01**: Alle configuratie via environment variables (AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AZURE_DNS_ZONE, AZURE_DNS_RECORD)
+- [x] **CFG-02**: Script valideert alle verplichte env vars bij startup en geeft beschrijvende foutmelding per ontbrekende variabele
 
 ### Operatie
 
-- [ ] **OPS-01**: Script gebruikt correcte exit codes (0=ok, 1=config-fout, 2=IP-fout, 3=auth-fout, 4=DNS-fout)
-- [ ] **OPS-02**: Script logt naar stdout (info/succes) en stderr (fouten)
+- [x] **OPS-01**: Script gebruikt correcte exit codes (0=ok, 1=config-fout, 2=IP-fout, 3=auth-fout, 4=DNS-fout)
+- [x] **OPS-02**: Script logt naar stdout (info/succes) en stderr (fouten)
 - [ ] **OPS-03**: Script gebruikt flock lock file om concurrent cron execution te voorkomen
 - [ ] **OPS-04**: Script ondersteunt --force flag om IP-vergelijking te skippen en altijd te updaten
 - [ ] **OPS-05**: Script ondersteunt verbose modus (VERBOSE=1 env var) voor extra debug output
@@ -72,19 +72,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| IP-01 | Phase 1 | Pending |
+| IP-01 | Phase 1 | Complete |
 | IP-02 | Phase 2 | Pending |
-| IP-03 | Phase 1 | Pending |
+| IP-03 | Phase 1 | Complete |
 | IP-04 | Phase 2 | Pending |
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| DNS-01 | Phase 1 | Pending |
-| DNS-02 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| DNS-01 | Phase 1 | Complete |
+| DNS-02 | Phase 1 | Complete |
 | DNS-03 | Phase 2 | Pending |
-| CFG-01 | Phase 1 | Pending |
-| CFG-02 | Phase 1 | Pending |
-| OPS-01 | Phase 1 | Pending |
-| OPS-02 | Phase 1 | Pending |
+| CFG-01 | Phase 1 | Complete |
+| CFG-02 | Phase 1 | Complete |
+| OPS-01 | Phase 1 | Complete |
+| OPS-02 | Phase 1 | Complete |
 | OPS-03 | Phase 2 | Pending |
 | OPS-04 | Phase 2 | Pending |
 | OPS-05 | Phase 2 | Pending |
