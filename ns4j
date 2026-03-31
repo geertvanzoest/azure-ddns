@@ -1,0 +1,212 @@
+#!/bin/bash
+set -euo pipefail
+trap 'log "ERROR" "Onverwachte fout op regel ${LINENO}"' ERR
+
+# --- Constanten ---
+readonly API_VERSION="2018-05-01"
+readonly AZURE_SCOPE="https://management.azure.com/.default"
+readonly IP_SERVICE="https://icanhazip.com"
+readonly EXIT_OK=0
+readonly EXIT_CONFIG=1
+readonly EXIT_IP=2
+readonly EXIT_AUTH=3
+readonly EXIT_DNS=4
+
+# --- Functies ---
+
+log() {
+    local level="$1"
+    shift
+    local message="$*"
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
+    if [[ "$level" == "ERROR" ]]; then
+        echo "[${timestamp}] ${level}: ${message}" >&2
+    else
+        echo "[${timestamp}] ${level}: ${message}"
+    fi
+}
+
+validate_config() {
+    local missing=0
+    local required_vars=(
+        AZURE_TENANT_ID
+        AZURE_CLIENT_ID
+        AZURE_CLIENT_SECRET
+        AZURE_SUBSCRIPTION_ID
+        AZURE_RESOURCE_GROUP
+        DNS_ZONE_NAME
+        DNS_RECORD_NAME
+    )
+
+    for var in "${required_vars[@]}"; do
+        if [[ -z "${!var:-}" ]]; then
+            log "ERROR" "${var} is niet ingesteld"
+            missing=1
+        fi
+    done
+
+    if ! command -v jq >/dev/null 2>&1; then
+        log "ERROR" "jq is niet geinstalleerd (apt-get install jq)"
+        missing=1
+    fi
+
+    if [[ "$missing" -eq 1 ]]; then
+        exit "${EXIT_CONFIG}"
+    fi
+}
+
+get_access_token() {
+    local token_url="https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token"
+
+    local response
+    response=$(curl --silent --show-error --max-time 10 \
+        --write-out "\n%{http_code}" \
+        --request POST \
+        --header "Content-Type: application/x-www-form-urlencoded" \
+        --data-urlencode "client_id=${AZURE_CLIENT_ID}" \
+        --data-urlencode "client_secret=${AZURE_CLIENT_SECRET}" \
+        --data-urlencode "scope=${AZURE_SCOPE}" \
+        --data-urlencode "grant_type=client_credentials" \
+        "$token_url")
+
+    local http_code
+    http_code=$(echo "$response" | tail -n1)
+    local body
+    body=$(echo "$response" | sed '$d')
+
+    if [[ "$http_code" != "200" ]]; then
+        log "ERROR" "Token request mislukt (HTTP ${http_code}): ${body}"
+        exit "${EXIT_AUTH}"
+    fi
+
+    local access_token
+    access_token=$(echo "$body" | jq -r '.access_token // empty')
+
+    if [[ -z "$access_token" ]]; then
+        log "ERROR" "Geen access_token in response"
+        exit "${EXIT_AUTH}"
+    fi
+
+    echo "$access_token"
+}
+
+get_public_ip() {
+    local response
+    response=$(curl --silent --show-error --max-time 10 \
+        --write-out "\n%{http_code}" \
+        "${IP_SERVICE}")
+
+    local http_code
+    http_code=$(echo "$response" | tail -n1)
+    local body
+    body=$(echo "$response" | sed '$d')
+
+    if [[ "$http_code" != "200" ]]; then
+        log "ERROR" "IP-detectie mislukt (HTTP ${http_code}): ${body}"
+        exit "${EXIT_IP}"
+    fi
+
+    local ip
+    ip=$(echo "$body" | tr -d '[:space:]')
+
+    if [[ -z "$ip" ]]; then
+        log "ERROR" "Geen IP-adres ontvangen van ${IP_SERVICE}"
+        exit "${EXIT_IP}"
+    fi
+
+    echo "$ip"
+}
+
+get_dns_record() {
+    local access_token="$1"
+    local dns_url="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_RESOURCE_GROUP}/providers/Microsoft.Network/dnsZones/${DNS_ZONE_NAME}/A/${DNS_RECORD_NAME}?api-version=${API_VERSION}"
+
+    local response
+    response=$(curl --silent --show-error --max-time 10 \
+        --write-out "\n%{http_code}" \
+        --header "Authorization: Bearer ${access_token}" \
+        "$dns_url")
+
+    local http_code
+    http_code=$(echo "$response" | tail -n1)
+    local body
+    body=$(echo "$response" | sed '$d')
+
+    if [[ "$http_code" == "200" ]]; then
+        local current_ip
+        current_ip=$(echo "$body" | jq -r '.properties.ARecords[0].ipv4Address // empty')
+        echo "$current_ip"
+    elif [[ "$http_code" == "404" ]]; then
+        echo ""
+    else
+        log "ERROR" "DNS record ophalen mislukt (HTTP ${http_code}): ${body}"
+        exit "${EXIT_DNS}"
+    fi
+}
+
+update_dns() {
+    local access_token="$1"
+    local new_ip="$2"
+    local ttl="${DNS_TTL:-300}"
+
+    local dns_url="https://management.azure.com/subscriptions/${AZURE_SUBSCRIPTION_ID}/resourceGroups/${AZURE_RESOURCE_GROUP}/providers/Microsoft.Network/dnsZones/${DNS_ZONE_NAME}/A/${DNS_RECORD_NAME}?api-version=${API_VERSION}"
+
+    local payload
+    payload=$(jq -n \
+        --arg ip "$new_ip" \
+        --argjson ttl "$ttl" \
+        '{properties: {TTL: $ttl, ARecords: [{ipv4Address: $ip}]}}')
+
+    local response
+    response=$(curl --silent --show-error --max-time 10 \
+        --write-out "\n%{http_code}" \
+        --request PUT \
+        --header "Authorization: Bearer ${access_token}" \
+        --header "Content-Type: application/json" \
+        --data "$payload" \
+        "$dns_url")
+
+    local http_code
+    http_code=$(echo "$response" | tail -n1)
+    local body
+    body=$(echo "$response" | sed '$d')
+
+    if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
+        log "INFO" "DNS record bijgewerkt: ${DNS_RECORD_NAME}.${DNS_ZONE_NAME} -> ${new_ip}"
+    else
+        log "ERROR" "DNS record update mislukt (HTTP ${http_code}): ${body}"
+        exit "${EXIT_DNS}"
+    fi
+}
+
+main() {
+    validate_config
+
+    local access_token
+    access_token=$(get_access_token)
+
+    local public_ip
+    public_ip=$(get_public_ip)
+
+    local current_ip
+    current_ip=$(get_dns_record "$access_token")
+
+    if [[ "$current_ip" == "$public_ip" ]]; then
+        log "INFO" "IP ongewijzigd (${public_ip})"
+        exit "${EXIT_OK}"
+    fi
+
+    if [[ -z "$current_ip" ]]; then
+        log "INFO" "Geen bestaand A-record gevonden, wordt aangemaakt"
+    else
+        log "INFO" "IP gewijzigd: ${current_ip} -> ${public_ip}"
+    fi
+
+    update_dns "$access_token" "$public_ip"
+
+    exit "${EXIT_OK}"
+}
+
+main "$@"
