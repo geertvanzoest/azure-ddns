@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-31T07:50:08.486Z"
-last_activity: 2026-03-31 -- Plan 02-01 complete
+status: verifying
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-31T07:56:38.419Z"
+last_activity: 2026-03-31
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
   percent: 67
 ---
 
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-03-30)
 
 Phase: 02 (hardening-en-operationele-robuustheid) — EXECUTING
 Plan: 2 of 2
-Status: Plan 01 complete, executing Plan 02
-Last activity: 2026-03-31 -- Plan 02-01 complete
+Status: Phase complete — ready for verification
+Last activity: 2026-03-31
 
 Progress: [███████░░░] 67%
 
@@ -54,6 +54,7 @@ Progress: [███████░░░] 67%
 *Updated after each plan completion*
 | Phase 01 P01 | 3min | 2 tasks | 1 files |
 | Phase 02 P01 | 3min | 2 tasks | 1 files |
+| Phase 02 P02 | 3min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,7 @@ Recent decisions affecting current work:
 - [Phase 02]: IP_SERVICES cascade: icanhazip primair, checkip.amazonaws fallback
 - [Phase 02]: BASH_SOURCE guard op entry point voor testbaarheid (bats unit tests)
 - [Phase 02]: VERBOSE=1 env var activeert debug(), AZURE_CLIENT_SECRET expliciet uitgesloten
+- [Phase 02]: PATH-based curl mock i.p.v. export -f voor betrouwbare bats subproces testing
 
 ### Pending Todos
 
@@ -79,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-31T07:50:08.483Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-31T07:56:38.417Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None

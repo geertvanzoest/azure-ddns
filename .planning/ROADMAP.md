@@ -45,7 +45,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md -- Implementeer alle hardening-features in het ns4j script (IP-validatie, fallback, flock, --force, verbose)
-- [ ] 02-02-PLAN.md -- Schrijf bats-core test suite voor alle Phase 2 requirements
+- [x] 02-02-PLAN.md -- Schrijf bats-core test suite voor alle Phase 2 requirements
 
 ## Progress
 
