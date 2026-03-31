@@ -1,6 +1,6 @@
 # azure-ddns -- Azure DNS Dynamic Updater
 
-![CI](https://github.com/hscjeka/ns4j/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/geertvanzoest/azure-ddns/actions/workflows/test.yml/badge.svg)
 
 Een lightweight bash script dat als DDNS-client werkt voor Azure DNS. Het detecteert het publieke IP-adres van het netwerk via een externe service en update een A-record in Azure DNS via de REST API. Ontworpen om als cron job op een Raspberry Pi te draaien met zero dependencies buiten standaard systeemtools.
 
@@ -42,7 +42,7 @@ sudo apt-get install jq
 ```bash
 # Download het script
 sudo curl -o /usr/local/bin/azure-ddns \
-  https://raw.githubusercontent.com/hscjeka/ns4j/main/azure-ddns
+  https://raw.githubusercontent.com/geertvanzoest/azure-ddns/main/azure-ddns
 
 # Maak uitvoerbaar
 sudo chmod +x /usr/local/bin/azure-ddns
