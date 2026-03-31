@@ -72,28 +72,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| IP-01 | — | Pending |
-| IP-02 | — | Pending |
-| IP-03 | — | Pending |
-| IP-04 | — | Pending |
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| DNS-01 | — | Pending |
-| DNS-02 | — | Pending |
-| DNS-03 | — | Pending |
-| CFG-01 | — | Pending |
-| CFG-02 | — | Pending |
-| OPS-01 | — | Pending |
-| OPS-02 | — | Pending |
-| OPS-03 | — | Pending |
-| OPS-04 | — | Pending |
-| OPS-05 | — | Pending |
+| IP-01 | Phase 1 | Pending |
+| IP-02 | Phase 2 | Pending |
+| IP-03 | Phase 1 | Pending |
+| IP-04 | Phase 2 | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| AUTH-02 | Phase 1 | Pending |
+| DNS-01 | Phase 1 | Pending |
+| DNS-02 | Phase 1 | Pending |
+| DNS-03 | Phase 2 | Pending |
+| CFG-01 | Phase 1 | Pending |
+| CFG-02 | Phase 1 | Pending |
+| OPS-01 | Phase 1 | Pending |
+| OPS-02 | Phase 1 | Pending |
+| OPS-03 | Phase 2 | Pending |
+| OPS-04 | Phase 2 | Pending |
+| OPS-05 | Phase 2 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16
+- Mapped to phases: 16
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-30*
-*Last updated: 2026-03-30 after initial definition*
+*Last updated: 2026-03-30 after roadmap creation*
