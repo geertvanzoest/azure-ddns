@@ -17,7 +17,7 @@ setup() {
 }
 
 @test "OPS-03: script bevat flock --nonblock" {
-    grep -q "flock --nonblock" "$DDNS4J_SCRIPT"
+    grep -q "flock --nonblock" "$AZURE_DDNS_SCRIPT"
 }
 
 @test "OPS-03: geblokkeerde lock geeft WARN en exit 0" {
@@ -30,7 +30,7 @@ setup() {
     export AZURE_SUBSCRIPTION_ID="test" AZURE_RESOURCE_GROUP="test"
     export DNS_ZONE_NAME="test.com" DNS_RECORD_NAME="test"
 
-    run bash "$DDNS4J_SCRIPT"
+    run bash "$AZURE_DDNS_SCRIPT"
     [ "$status" -eq 0 ]
     [[ "$output" =~ "Andere instantie draait" ]]
 

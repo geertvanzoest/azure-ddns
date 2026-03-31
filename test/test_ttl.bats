@@ -20,9 +20,9 @@ setup() {
 }
 
 @test "DNS-03: DNS_TTL wordt gebruikt in azure-ddns script (update_dns functie)" {
-    grep -q 'DNS_TTL:-300' "$DDNS4J_SCRIPT"
+    grep -q 'DNS_TTL:-300' "$AZURE_DDNS_SCRIPT"
 }
 
 @test "DNS-03: DNS_TTL wordt gelogd in validate_config debug output" {
-    grep -q 'DNS_TTL' "$DDNS4J_SCRIPT"
+    grep -q 'DNS_TTL' "$AZURE_DDNS_SCRIPT"
 }
