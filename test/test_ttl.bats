@@ -19,10 +19,10 @@ setup() {
     [ "$ttl" -eq 600 ]
 }
 
-@test "DNS-03: DNS_TTL wordt gebruikt in ns4j script (update_dns functie)" {
-    grep -q 'DNS_TTL:-300' "$NS4J_SCRIPT"
+@test "DNS-03: DNS_TTL wordt gebruikt in ddns4j script (update_dns functie)" {
+    grep -q 'DNS_TTL:-300' "$DDNS4J_SCRIPT"
 }
 
 @test "DNS-03: DNS_TTL wordt gelogd in validate_config debug output" {
-    grep -q 'DNS_TTL' "$NS4J_SCRIPT"
+    grep -q 'DNS_TTL' "$DDNS4J_SCRIPT"
 }

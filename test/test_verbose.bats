@@ -5,7 +5,7 @@
 
 setup() {
     load test_helper
-    load_ns4j
+    load_ddns4j
 }
 
 @test "OPS-05: debug() produceert output bij VERBOSE=1" {

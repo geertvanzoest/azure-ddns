@@ -5,7 +5,7 @@
 
 setup() {
     load test_helper
-    load_ns4j
+    load_ddns4j
 }
 
 @test "OPS-04: parse_args zet FORCE=1 bij --force" {
