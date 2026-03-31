@@ -44,14 +44,16 @@ Plans:
 **Goal**: Elke push en PR wordt automatisch gevalideerd door de test suite op een schone Linux-omgeving
 **Depends on**: Phase 3
 **Requirements**: CI-01, CI-02
+**Plans:** 1 plan
+
+Plans:
+- [ ] 04-01-PLAN.md — GitHub Actions CI workflow met bats tests
 
 **Success Criteria** (what must be TRUE):
 
   1. Een push naar een branch triggert automatisch een GitHub Actions workflow die alle bats tests draait
   2. Een pull request toont een groen/rood CI-status check
   3. De CI-omgeving is Ubuntu met bash, curl, jq en bats-core beschikbaar
-
-**Plans**: TBD
 
 ### Phase 5: Documentatie
 
@@ -76,5 +78,5 @@ Plans:
 | 1. Werkend kern-script | v1.0 | 1/1 | Complete | 2026-03-31 |
 | 2. Hardening en operationele robuustheid | v1.0 | 2/2 | Complete | 2026-03-31 |
 | 3. Rename naar ddns4j | v1.1 | 1/1 | Complete | 2026-03-31 |
-| 4. CI pipeline | v1.1 | 0/? | Not started | - |
+| 4. CI pipeline | v1.1 | 0/1 | Planning | - |
 | 5. Documentatie | v1.1 | 0/? | Not started | - |
