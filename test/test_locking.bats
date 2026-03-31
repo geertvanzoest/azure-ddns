@@ -11,9 +11,9 @@ setup() {
     load test_helper
 }
 
-@test "OPS-03: LOCK_FILE is /tmp/ddns4j.lock" {
-    load_ddns4j
-    [ "$LOCK_FILE" = "/tmp/ddns4j.lock" ]
+@test "OPS-03: LOCK_FILE is /tmp/azure-ddns.lock" {
+    load_azure_ddns
+    [ "$LOCK_FILE" = "/tmp/azure-ddns.lock" ]
 }
 
 @test "OPS-03: script bevat flock --nonblock" {
@@ -22,7 +22,7 @@ setup() {
 
 @test "OPS-03: geblokkeerde lock geeft WARN en exit 0" {
     # Simuleer een geblokkeerde lock door het lockfile vast te houden
-    exec 200>/tmp/ddns4j.lock
+    exec 200>/tmp/azure-ddns.lock
     flock --nonblock 200
 
     # Start tweede instantie (moet falen op flock)

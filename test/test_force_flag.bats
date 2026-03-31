@@ -5,7 +5,7 @@
 
 setup() {
     load test_helper
-    load_ddns4j
+    load_azure_ddns
 }
 
 @test "OPS-04: parse_args zet FORCE=1 bij --force" {

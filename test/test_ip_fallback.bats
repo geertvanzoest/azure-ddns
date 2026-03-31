@@ -5,7 +5,7 @@
 
 setup() {
     load test_helper
-    load_ddns4j
+    load_azure_ddns
 }
 
 teardown() {

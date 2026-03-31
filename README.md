@@ -1,4 +1,4 @@
-# ddns4j -- Azure DNS Dynamic Updater
+# azure-ddns -- Azure DNS Dynamic Updater
 
 ![CI](https://github.com/hscjeka/ns4j/actions/workflows/ci.yml/badge.svg)
 
@@ -8,7 +8,7 @@ Een lightweight bash script dat als DDNS-client werkt voor Azure DNS. Het detect
 
 - Automatische IP-detectie met fallback (icanhazip.com -> checkip.amazonaws.com)
 - Slimme update: alleen PUT naar Azure DNS als het IP daadwerkelijk gewijzigd is
-- Lock file (`/tmp/ddns4j.lock`) voorkomt gelijktijdige runs via `flock`
+- Lock file (`/tmp/azure-ddns.lock`) voorkomt gelijktijdige runs via `flock`
 - Force modus (`--force`) voor update ongeacht IP-wijziging
 - Debug modus (`VERBOSE=1`) voor uitgebreide logging
 - Configureerbare TTL (`DNS_TTL`, default 300 seconden)
@@ -20,7 +20,7 @@ Een lightweight bash script dat als DDNS-client werkt voor Azure DNS. Het detect
 2. Download het script en maak het uitvoerbaar (zie [Installatie](#installatie))
 3. Maak een Azure Service Principal aan (zie [Configuratie](#configuratie))
 4. Stel de environment variables in (zie [Environment variables](#environment-variables))
-5. Test: `./ddns4j`
+5. Test: `./azure-ddns`
 6. Stel een cron job in (zie [Cron job instellen](#cron-job-instellen))
 
 ## Vereisten
@@ -41,25 +41,25 @@ sudo apt-get install jq
 
 ```bash
 # Download het script
-sudo curl -o /usr/local/bin/ddns4j \
-  https://raw.githubusercontent.com/hscjeka/ns4j/main/ddns4j
+sudo curl -o /usr/local/bin/azure-ddns \
+  https://raw.githubusercontent.com/hscjeka/ns4j/main/azure-ddns
 
 # Maak uitvoerbaar
-sudo chmod +x /usr/local/bin/ddns4j
+sudo chmod +x /usr/local/bin/azure-ddns
 
 # Controleer
-ddns4j --help || echo "Geinstalleerd in $(which ddns4j)"
+azure-ddns --help || echo "Geinstalleerd in $(which azure-ddns)"
 ```
 
 ## Configuratie
 
 ### Azure Service Principal aanmaken
 
-ddns4j heeft een Azure Service Principal nodig met minimale rechten op de DNS zone. Voer de volgende stappen uit met de Azure CLI (`az`):
+azure-ddns heeft een Azure Service Principal nodig met minimale rechten op de DNS zone. Voer de volgende stappen uit met de Azure CLI (`az`):
 
 ```bash
 # 1. App registratie aanmaken
-az ad app create --display-name "ddns4j"
+az ad app create --display-name "azure-ddns"
 # Noteer de appId uit de output -> dit wordt AZURE_CLIENT_ID
 ```
 
@@ -70,7 +70,7 @@ az ad sp create --id <APP_ID>
 
 ```bash
 # 3. Client secret genereren
-az ad app credential reset --id <APP_ID> --display-name "ddns4j-secret"
+az ad app credential reset --id <APP_ID> --display-name "azure-ddns-secret"
 # Noteer password uit de output -> dit wordt AZURE_CLIENT_SECRET
 # Noteer tenant uit de output -> dit wordt AZURE_TENANT_ID
 ```
@@ -126,16 +126,16 @@ De variabelen worden direct in de crontab-regel gezet. Zie het voorbeeld hierond
 
 ```bash
 # Normaal (update alleen als IP gewijzigd is)
-./ddns4j
+./azure-ddns
 
 # Force update (altijd updaten, ongeacht IP-wijziging)
-./ddns4j --force
+./azure-ddns --force
 
 # Debug modus (uitgebreide logging)
-VERBOSE=1 ./ddns4j
+VERBOSE=1 ./azure-ddns
 
 # Combinatie: force update met debug output
-VERBOSE=1 ./ddns4j --force
+VERBOSE=1 ./azure-ddns --force
 ```
 
 ### Cron job instellen
@@ -149,25 +149,25 @@ crontab -e
 Voeg een regel toe om het script elke 5 minuten te draaien:
 
 ```bash
-*/5 * * * * AZURE_TENANT_ID=xxx AZURE_CLIENT_ID=xxx AZURE_CLIENT_SECRET=xxx AZURE_SUBSCRIPTION_ID=xxx AZURE_RESOURCE_GROUP=xxx DNS_ZONE_NAME=xxx DNS_RECORD_NAME=xxx /usr/local/bin/ddns4j >> /var/log/ddns4j.log 2>&1
+*/5 * * * * AZURE_TENANT_ID=xxx AZURE_CLIENT_ID=xxx AZURE_CLIENT_SECRET=xxx AZURE_SUBSCRIPTION_ID=xxx AZURE_RESOURCE_GROUP=xxx DNS_ZONE_NAME=xxx DNS_RECORD_NAME=xxx /usr/local/bin/azure-ddns >> /var/log/azure-ddns.log 2>&1
 ```
 
 Als de environment variables al in `/etc/environment` staan, volstaat:
 
 ```bash
-*/5 * * * * /usr/local/bin/ddns4j >> /var/log/ddns4j.log 2>&1
+*/5 * * * * /usr/local/bin/azure-ddns >> /var/log/azure-ddns.log 2>&1
 ```
 
-De output wordt naar `/var/log/ddns4j.log` geschreven voor troubleshooting. Maak het logbestand aan als het nog niet bestaat:
+De output wordt naar `/var/log/azure-ddns.log` geschreven voor troubleshooting. Maak het logbestand aan als het nog niet bestaat:
 
 ```bash
-sudo touch /var/log/ddns4j.log
-sudo chown $(whoami) /var/log/ddns4j.log
+sudo touch /var/log/azure-ddns.log
+sudo chown $(whoami) /var/log/azure-ddns.log
 ```
 
 ### Lock file
 
-Het script gebruikt `/tmp/ddns4j.lock` via `flock` om te voorkomen dat twee instanties tegelijk draaien. Als een vorige run nog bezig is, wordt de nieuwe run overgeslagen met de melding "Andere instantie draait, overgeslagen". Hier is geen actie van de gebruiker voor nodig.
+Het script gebruikt `/tmp/azure-ddns.lock` via `flock` om te voorkomen dat twee instanties tegelijk draaien. Als een vorige run nog bezig is, wordt de nieuwe run overgeslagen met de melding "Andere instantie draait, overgeslagen". Hier is geen actie van de gebruiker voor nodig.
 
 ## Troubleshooting
 
@@ -184,7 +184,7 @@ Het script gebruikt `/tmp/ddns4j.lock` via `flock` om te voorkomen dat twee inst
 Controleer de exit code na een run:
 
 ```bash
-./ddns4j; echo "Exit code: $?"
+./azure-ddns; echo "Exit code: $?"
 ```
 
 ### Debug modus
@@ -192,7 +192,7 @@ Controleer de exit code na een run:
 Gebruik `VERBOSE=1` voor uitgebreide logging:
 
 ```bash
-VERBOSE=1 ./ddns4j
+VERBOSE=1 ./azure-ddns
 ```
 
 Dit toont:
@@ -209,7 +209,7 @@ Dit toont:
 Een vorige run is nog bezig. Wacht tot deze klaar is. Als het script vasthangt, verwijder handmatig de lock file:
 
 ```bash
-rm /tmp/ddns4j.lock
+rm /tmp/azure-ddns.lock
 ```
 
 **HTTP 401 bij token request (exit code 3)**
@@ -217,7 +217,7 @@ rm /tmp/ddns4j.lock
 De client secret is verlopen of onjuist. Genereer een nieuw secret:
 
 ```bash
-az ad app credential reset --id <APP_ID> --display-name "ddns4j-secret"
+az ad app credential reset --id <APP_ID> --display-name "azure-ddns-secret"
 ```
 
 Werk vervolgens `AZURE_CLIENT_SECRET` bij in de environment variables.
@@ -247,7 +247,7 @@ Als beide falen, controleer de internetverbinding en eventuele firewall-regels.
 
 ## IP-services
 
-ddns4j probeert achtereenvolgens de volgende services om het publieke IP-adres te detecteren:
+azure-ddns probeert achtereenvolgens de volgende services om het publieke IP-adres te detecteren:
 
 | Volgorde | Service | URL | Eigenaar |
 |----------|---------|-----|----------|

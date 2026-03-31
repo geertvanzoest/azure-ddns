@@ -5,7 +5,7 @@
 
 setup() {
     load test_helper
-    load_ddns4j
+    load_azure_ddns
 }
 
 @test "OPS-05: debug() produceert output bij VERBOSE=1" {

@@ -10,7 +10,7 @@ readonly IP_SERVICES=(
     "https://checkip.amazonaws.com"
 )
 readonly IP_REGEX="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-readonly LOCK_FILE="/tmp/ddns4j.lock"
+readonly LOCK_FILE="/tmp/azure-ddns.lock"
 readonly EXIT_OK=0
 readonly EXIT_CONFIG=1
 readonly EXIT_IP=2

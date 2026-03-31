@@ -1,12 +1,12 @@
 #!/bin/bash
-# Test helper voor ddns4j bats tests
-# Source ddns4j functies zonder main() uit te voeren (BASH_SOURCE guard)
+# Test helper voor azure-ddns bats tests
+# Source azure-ddns functies zonder main() uit te voeren (BASH_SOURCE guard)
 
-# Pad naar het ddns4j script (relatief vanuit test/ directory)
-DDNS4J_SCRIPT="${BATS_TEST_DIRNAME}/../ddns4j"
+# Pad naar het azure-ddns script (relatief vanuit test/ directory)
+AZURE_DDNS_SCRIPT="${BATS_TEST_DIRNAME}/../azure-ddns"
 
 # Source het script -- BASH_SOURCE guard voorkomt main() executie
-load_ddns4j() {
+load_azure_ddns() {
     # Zet minimale env vars zodat source niet faalt op set -u
     export AZURE_TENANT_ID="${AZURE_TENANT_ID:-test-tenant}"
     export AZURE_CLIENT_ID="${AZURE_CLIENT_ID:-test-client}"
@@ -16,11 +16,11 @@ load_ddns4j() {
     export DNS_ZONE_NAME="${DNS_ZONE_NAME:-test.example.com}"
     export DNS_RECORD_NAME="${DNS_RECORD_NAME:-home}"
 
-    source "$DDNS4J_SCRIPT"
+    source "$AZURE_DDNS_SCRIPT"
 }
 
 # Curl mock: vervang curl met een functie die gecontroleerde output geeft.
-# Simuleert het --write-out "\n%{http_code}" formaat dat ddns4j gebruikt:
+# Simuleert het --write-out "\n%{http_code}" formaat dat azure-ddns gebruikt:
 #   body
 #   http_code
 # Gebruik: setup_curl_mock "response_body" "http_code"

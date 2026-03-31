@@ -19,7 +19,7 @@ setup() {
     [ "$ttl" -eq 600 ]
 }
 
-@test "DNS-03: DNS_TTL wordt gebruikt in ddns4j script (update_dns functie)" {
+@test "DNS-03: DNS_TTL wordt gebruikt in azure-ddns script (update_dns functie)" {
     grep -q 'DNS_TTL:-300' "$DDNS4J_SCRIPT"
 }
 
