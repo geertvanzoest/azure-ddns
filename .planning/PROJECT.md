@@ -12,17 +12,17 @@ Het Azure DNS A-record is altijd actueel met het huidige publieke IP-adres van h
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Script detecteert het huidige publieke IP via een externe service — Validated in Phase 1: werkend-kern-script
+- [x] Script authenticeert naar Azure via Service Principal credentials (env vars) — Validated in Phase 1: werkend-kern-script
+- [x] Script update een A-record in Azure DNS via curl REST API calls — Validated in Phase 1: werkend-kern-script
+- [x] Script logt wijzigingen en errors naar console (stdout/stderr) — Validated in Phase 1: werkend-kern-script
+- [x] Configuratie volledig via environment variables — Validated in Phase 1: werkend-kern-script
+- [x] Zero dependencies buiten bash en curl — Validated in Phase 1: werkend-kern-script (+ jq)
+- [x] Script draait als single-run (voor cron job), geen daemon — Validated in Phase 1: werkend-kern-script
 
 ### Active
 
-- [ ] Script detecteert het huidige publieke IP via een externe service
-- [ ] Script authenticeert naar Azure via Service Principal credentials (env vars)
-- [ ] Script update een A-record in Azure DNS via curl REST API calls
-- [ ] Script logt wijzigingen en errors naar console (stdout/stderr)
-- [ ] Configuratie volledig via environment variables
-- [ ] Zero dependencies buiten bash en curl
-- [ ] Script draait als single-run (voor cron job), geen daemon
+(All initial requirements validated in Phase 1)
 
 ### Out of Scope
 
@@ -56,11 +56,11 @@ Het Azure DNS A-record is altijd actueel met het huidige publieke IP-adres van h
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Bash + curl i.p.v. Node.js | Zero dependencies, lichter kan niet, curl zit al op de Pi | — Pending |
-| Direct Azure REST API i.p.v. SDK/CLI | Geen extra tooling nodig, curl volstaat voor twee API calls | — Pending |
-| Cron job i.p.v. daemon/systemd | Simpelst mogelijke uitvoeringsmodel, Pi-friendly | — Pending |
-| Env vars i.p.v. config file | Past bij cron-model, geen file management nodig | — Pending |
-| Externe IP-service (ifconfig.me) | Simpel, betrouwbaar, geen lokale netwerk-parsing nodig | — Pending |
+| Bash + curl i.p.v. Node.js | Zero dependencies, lichter kan niet, curl zit al op de Pi | Validated Phase 1 |
+| Direct Azure REST API i.p.v. SDK/CLI | Geen extra tooling nodig, curl volstaat voor twee API calls | Validated Phase 1 |
+| Cron job i.p.v. daemon/systemd | Simpelst mogelijke uitvoeringsmodel, Pi-friendly | Validated Phase 1 |
+| Env vars i.p.v. config file | Past bij cron-model, geen file management nodig | Validated Phase 1 |
+| Externe IP-service (icanhazip.com) | Cloudflare-backed, betrouwbaar, sneller dan alternatieven | Validated Phase 1 |
 
 ## Evolution
 
@@ -80,4 +80,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-30 after initialization*
+*Last updated: 2026-03-31 after Phase 1 completion*
