@@ -5,12 +5,20 @@ trap 'log "ERROR" "Onverwachte fout op regel ${LINENO}"' ERR
 # --- Constanten ---
 readonly API_VERSION="2018-05-01"
 readonly AZURE_SCOPE="https://management.azure.com/.default"
-readonly IP_SERVICE="https://icanhazip.com"
+readonly IP_SERVICES=(
+    "https://icanhazip.com"
+    "https://checkip.amazonaws.com"
+)
+readonly IP_REGEX="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+readonly LOCK_FILE="/tmp/ns4j.lock"
 readonly EXIT_OK=0
 readonly EXIT_CONFIG=1
 readonly EXIT_IP=2
 readonly EXIT_AUTH=3
 readonly EXIT_DNS=4
+
+# --- Variabelen ---
+FORCE=0
 
 # --- Functies ---
 
@@ -26,6 +34,27 @@ log() {
     else
         echo "[${timestamp}] ${level}: ${message}"
     fi
+}
+
+debug() {
+    if [[ "${VERBOSE:-0}" == "1" ]]; then
+        log "DEBUG" "$@"
+    fi
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --force)
+                FORCE=1
+                shift
+                ;;
+            *)
+                log "ERROR" "Onbekende optie: $1"
+                exit "${EXIT_CONFIG}"
+                ;;
+        esac
+    done
 }
 
 validate_config() {
@@ -209,4 +238,13 @@ main() {
     exit "${EXIT_OK}"
 }
 
-main "$@"
+# --- Entry point ---
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    exec 200>"$LOCK_FILE"
+    if ! flock --nonblock 200; then
+        log "WARN" "Andere instantie draait, overgeslagen"
+        exit 0
+    fi
+
+    main "$@"
+fi
