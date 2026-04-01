@@ -253,7 +253,7 @@ If both fail, check the internet connection and any firewall rules.
 
 ## IP services
 
-azure-ddns tries the following services in order to detect the public IP address:
+azure-ddns tries the following services to detect the public IP address:
 
 | Order | Service | URL | Owner |
 |-------|---------|-----|-------|

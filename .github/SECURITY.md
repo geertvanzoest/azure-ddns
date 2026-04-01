@@ -29,5 +29,5 @@ Relevant reports:
 
 Out of scope:
 - Denial of service on external IP services (icanhazip.com, checkip.amazonaws.com)
-- Azure API rate limiting
+- Azure API rate-limiting
 - Issues in dependencies (bash, curl, jq) — report those upstream
