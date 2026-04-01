@@ -1,33 +1,33 @@
 # Security Policy
 
-## Ondersteunde versies
+## Supported versions
 
-| Versie | Ondersteund |
-|--------|-------------|
-| latest (main) | Ja |
-| < latest | Nee |
+| Version | Supported |
+|---------|-----------|
+| latest (main) | Yes |
+| < latest | No |
 
-## Kwetsbaarheid melden
+## Reporting a vulnerability
 
-Heb je een beveiligingsprobleem gevonden in azure-ddns? Meld het **niet** via een publieke issue.
+Found a security issue in azure-ddns? Do **not** report it via a public issue.
 
-**Stuur een privé rapport via GitHub:**
+**Submit a private report via GitHub:**
 
-1. Ga naar [Security Advisories](https://github.com/geertvanzoest/azure-ddns/security/advisories)
-2. Klik **"New draft security advisory"**
-3. Beschrijf het probleem, de impact, en eventuele stappen om te reproduceren
+1. Go to [Security Advisories](https://github.com/geertvanzoest/azure-ddns/security/advisories)
+2. Click **"New draft security advisory"**
+3. Describe the issue, its impact, and any steps to reproduce
 
-Je ontvangt binnen 7 dagen een reactie.
+You will receive a response within 7 days.
 
 ## Scope
 
-Relevante meldingen:
-- Credential leakage (bijv. AZURE_CLIENT_SECRET in logs/output)
+Relevant reports:
+- Credential leakage (e.g. AZURE_CLIENT_SECRET in logs/output)
 - Command injection via environment variables
-- Onveilige file permissions (lock file, env file)
-- HTTPS downgrade of certificate validatie bypass
+- Insecure file permissions (lock file, env file)
+- HTTPS downgrade or certificate validation bypass
 
-Niet in scope:
-- Denial of service op externe IP-services (icanhazip.com, checkip.amazonaws.com)
+Out of scope:
+- Denial of service on external IP services (icanhazip.com, checkip.amazonaws.com)
 - Azure API rate limiting
-- Problemen in dependencies (bash, curl, jq) — meld die upstream
+- Issues in dependencies (bash, curl, jq) — report those upstream

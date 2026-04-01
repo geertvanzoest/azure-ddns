@@ -1,16 +1,16 @@
-## Wat doet deze PR?
+## What does this PR do?
 
-Korte beschrijving van de wijziging.
+Brief description of the change.
 
-## Type wijziging
+## Type of change
 
 - [ ] Bug fix
-- [ ] Nieuwe feature
-- [ ] Documentatie
-- [ ] Overig
+- [ ] New feature
+- [ ] Documentation
+- [ ] Other
 
 ## Checklist
 
-- [ ] `bats test/` slaagt lokaal
-- [ ] Nieuwe tests toegevoegd (indien van toepassing)
-- [ ] README bijgewerkt (indien van toepassing)
+- [ ] `bats test/` passes locally
+- [ ] New tests added (if applicable)
+- [ ] README updated (if applicable)

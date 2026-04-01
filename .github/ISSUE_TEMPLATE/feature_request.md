@@ -1,19 +1,19 @@
 ---
 name: Feature request
-about: Stel een verbetering voor
+about: Suggest an improvement
 title: ''
 labels: enhancement
 assignees: ''
 ---
 
-## Beschrijving
+## Description
 
-Wat wil je dat azure-ddns kan doen?
+What would you like azure-ddns to do?
 
-## Motivatie
+## Motivation
 
-Waarom is dit nuttig? Welk probleem lost het op?
+Why is this useful? What problem does it solve?
 
-## Mogelijke implementatie
+## Possible implementation
 
-Heb je een idee hoe dit gebouwd zou kunnen worden? (optioneel)
+Do you have an idea how this could be built? (optional)

@@ -1,34 +1,34 @@
 ---
 name: Bug report
-about: Meld een probleem met azure-ddns
+about: Report an issue with azure-ddns
 title: ''
 labels: bug
 assignees: ''
 ---
 
-## Beschrijving
+## Description
 
-Korte beschrijving van het probleem.
+Brief description of the issue.
 
-## Verwacht gedrag
+## Expected behavior
 
-Wat had er moeten gebeuren?
+What should have happened?
 
-## Werkelijk gedrag
+## Actual behavior
 
-Wat gebeurde er? Plak de volledige output:
+What happened? Paste the full output:
 
 ```
 VERBOSE=1 ./azure-ddns --force 2>&1
 ```
 
-## Omgeving
+## Environment
 
-- OS: (bijv. Raspberry Pi OS Bookworm)
-- bash versie: (`bash --version`)
-- curl versie: (`curl --version`)
-- jq versie: (`jq --version`)
+- OS: (e.g. Raspberry Pi OS Bookworm)
+- bash version: (`bash --version`)
+- curl version: (`curl --version`)
+- jq version: (`jq --version`)
 
 ## Exit code
 
-Welke exit code kreeg je? (`echo $?` na het draaien)
+What exit code did you get? (`echo $?` after running)
