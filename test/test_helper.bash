@@ -1,13 +1,13 @@
 #!/bin/bash
-# Test helper voor azure-ddns bats tests
-# Source azure-ddns functies zonder main() uit te voeren (BASH_SOURCE guard)
+# Test helper for azure-ddns bats tests
+# Source azure-ddns functions without executing main() (BASH_SOURCE guard)
 
-# Pad naar het azure-ddns script (relatief vanuit test/ directory)
+# Path to the azure-ddns script (relative from test/ directory)
 AZURE_DDNS_SCRIPT="${BATS_TEST_DIRNAME}/../azure-ddns"
 
-# Source het script -- BASH_SOURCE guard voorkomt main() executie
+# Source the script -- BASH_SOURCE guard prevents main() execution
 load_azure_ddns() {
-    # Zet minimale env vars zodat source niet faalt op set -u
+    # Set minimal env vars so source doesn't fail on set -u
     export AZURE_TENANT_ID="${AZURE_TENANT_ID:-test-tenant}"
     export AZURE_CLIENT_ID="${AZURE_CLIENT_ID:-test-client}"
     export AZURE_CLIENT_SECRET="${AZURE_CLIENT_SECRET:-test-secret}"
@@ -19,16 +19,16 @@ load_azure_ddns() {
     source "$AZURE_DDNS_SCRIPT"
 }
 
-# Curl mock: vervang curl met een functie die gecontroleerde output geeft.
-# Simuleert het --write-out "\n%{http_code}" formaat dat azure-ddns gebruikt:
+# Curl mock: replace curl with a function that returns controlled output.
+# Simulates the --write-out "\n%{http_code}" format used by azure-ddns:
 #   body
 #   http_code
-# Gebruik: setup_curl_mock "response_body" "http_code"
+# Usage: setup_curl_mock "response_body" "http_code"
 setup_curl_mock() {
     local body="$1"
     local http_code="${2:-200}"
 
-    # Maak een tijdelijk script dat als curl fungeert
+    # Create a temporary script that acts as curl
     MOCK_CURL_BIN=$(mktemp "${TMPDIR:-/tmp}/mock_curl.XXXXXX")
     cat > "$MOCK_CURL_BIN" <<MOCK_EOF
 #!/bin/bash
@@ -37,22 +37,22 @@ echo '${http_code}'
 MOCK_EOF
     chmod +x "$MOCK_CURL_BIN"
 
-    # Voeg mock directory toe aan PATH zodat het echte curl overschreven wordt
+    # Add mock directory to PATH so it overrides the real curl
     MOCK_CURL_DIR=$(dirname "$MOCK_CURL_BIN")
     ln -sf "$MOCK_CURL_BIN" "${MOCK_CURL_DIR}/curl"
     export PATH="${MOCK_CURL_DIR}:${PATH}"
 }
 
-# Curl mock voor meerdere calls (fallback testing)
-# Elke call geeft het volgende antwoord uit de reeks.
-# Gebruik: setup_curl_sequence "body1|code1" "body2|code2"
+# Curl mock for multiple calls (fallback testing)
+# Each call returns the next response from the sequence.
+# Usage: setup_curl_sequence "body1|code1" "body2|code2"
 setup_curl_sequence() {
     local call_count_file
     call_count_file=$(mktemp "${TMPDIR:-/tmp}/curl_count.XXXXXX")
     echo "0" > "$call_count_file"
     MOCK_CURL_COUNT_FILE="$call_count_file"
 
-    # Schrijf response data naar tijdelijke bestanden
+    # Write response data to temporary files
     local i=0
     MOCK_CURL_RESP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/curl_resp.XXXXXX")
     for resp in "$@"; do
@@ -64,7 +64,7 @@ setup_curl_sequence() {
     done
     local total=$i
 
-    # Maak een tijdelijk script dat als curl fungeert
+    # Create a temporary script that acts as curl
     MOCK_CURL_BIN=$(mktemp "${TMPDIR:-/tmp}/mock_curl.XXXXXX")
     cat > "$MOCK_CURL_BIN" <<MOCK_EOF
 #!/bin/bash
@@ -81,15 +81,15 @@ fi
 MOCK_EOF
     chmod +x "$MOCK_CURL_BIN"
 
-    # Voeg mock directory toe aan PATH
+    # Add mock directory to PATH
     MOCK_CURL_DIR=$(dirname "$MOCK_CURL_BIN")
     ln -sf "$MOCK_CURL_BIN" "${MOCK_CURL_DIR}/curl"
     export PATH="${MOCK_CURL_DIR}:${PATH}"
 }
 
-# Cleanup: verwijder mock bestanden en herstel PATH
+# Cleanup: remove mock files and restore PATH
 teardown_curl_mock() {
-    # Verwijder mock curl symlink en script
+    # Remove mock curl symlink and script
     if [[ -n "${MOCK_CURL_DIR:-}" ]]; then
         rm -f "${MOCK_CURL_DIR}/curl" 2>/dev/null || true
     fi

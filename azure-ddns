@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-trap 'log "ERROR" "Onverwachte fout op regel ${LINENO}"' ERR
+trap 'log "ERROR" "Unexpected error on line ${LINENO}"' ERR
 
-# --- Constanten ---
+# --- Constants ---
 readonly API_VERSION="2018-05-01"
 readonly AZURE_SCOPE="https://management.azure.com/.default"
 readonly IP_SERVICES=(
@@ -17,10 +17,10 @@ readonly EXIT_IP=2
 readonly EXIT_AUTH=3
 readonly EXIT_DNS=4
 
-# --- Variabelen ---
+# --- Variables ---
 FORCE=0
 
-# --- Functies ---
+# --- Functions ---
 
 log() {
     local level="$1"
@@ -50,7 +50,7 @@ parse_args() {
                 shift
                 ;;
             *)
-                log "ERROR" "Onbekende optie: $1"
+                log "ERROR" "Unknown option: $1"
                 exit "${EXIT_CONFIG}"
                 ;;
         esac
@@ -71,13 +71,13 @@ validate_config() {
 
     for var in "${required_vars[@]}"; do
         if [[ -z "${!var:-}" ]]; then
-            log "ERROR" "${var} is niet ingesteld"
+            log "ERROR" "${var} is not set"
             missing=1
         fi
     done
 
     if ! command -v jq >/dev/null 2>&1; then
-        log "ERROR" "jq is niet geinstalleerd (apt-get install jq)"
+        log "ERROR" "jq is not installed (apt-get install jq)"
         missing=1
     fi
 
@@ -112,7 +112,7 @@ get_access_token() {
     body=$(echo "$response" | sed '$d')
 
     if [[ "$http_code" != "200" ]]; then
-        log "ERROR" "Token request mislukt (HTTP ${http_code}): ${body}"
+        log "ERROR" "Token request failed (HTTP ${http_code}): ${body}"
         exit "${EXIT_AUTH}"
     fi
 
@@ -120,11 +120,11 @@ get_access_token() {
     access_token=$(echo "$body" | jq -r '.access_token // empty')
 
     if [[ -z "$access_token" ]]; then
-        log "ERROR" "Geen access_token in response"
+        log "ERROR" "No access_token in response"
         exit "${EXIT_AUTH}"
     fi
 
-    debug "OAuth2 token verkregen (HTTP ${http_code})"
+    debug "OAuth2 token obtained (HTTP ${http_code})"
     echo "$access_token"
 }
 
@@ -133,7 +133,7 @@ get_public_ip() {
     for service in "${IP_SERVICES[@]}"; do
         response=$(curl --silent --show-error --max-time 10 \
             --write-out "\n%{http_code}" "$service" 2>/dev/null) || {
-            debug "Service ${service} niet bereikbaar"
+            debug "Service ${service} unreachable"
             continue
         }
         http_code=$(echo "$response" | tail -n1)
@@ -145,14 +145,14 @@ get_public_ip() {
             continue
         fi
         if [[ ! "$ip" =~ $IP_REGEX ]]; then
-            debug "Service ${service}: ongeldig IP '${ip}'"
+            debug "Service ${service}: invalid IP '${ip}'"
             continue
         fi
         debug "Service ${service}: IP=${ip}"
         echo "$ip"
         return 0
     done
-    log "ERROR" "Geen geldige IP-service beschikbaar (geprobeerd: ${IP_SERVICES[*]})"
+    log "ERROR" "No valid IP service available (tried: ${IP_SERVICES[*]})"
     exit "${EXIT_IP}"
 }
 
@@ -174,13 +174,13 @@ get_dns_record() {
     if [[ "$http_code" == "200" ]]; then
         local current_ip
         current_ip=$(echo "$body" | jq -r '.properties.ARecords[0].ipv4Address // empty')
-        debug "DNS record gevonden: ${current_ip}"
+        debug "DNS record found: ${current_ip}"
         echo "$current_ip"
     elif [[ "$http_code" == "404" ]]; then
-        debug "Geen bestaand DNS record (HTTP 404)"
+        debug "No existing DNS record (HTTP 404)"
         echo ""
     else
-        log "ERROR" "DNS record ophalen mislukt (HTTP ${http_code}): ${body}"
+        log "ERROR" "Failed to retrieve DNS record (HTTP ${http_code}): ${body}"
         exit "${EXIT_DNS}"
     fi
 }
@@ -215,9 +215,9 @@ update_dns() {
     body=$(echo "$response" | sed '$d')
 
     if [[ "$http_code" == "200" || "$http_code" == "201" ]]; then
-        log "INFO" "DNS record bijgewerkt: ${DNS_RECORD_NAME}.${DNS_ZONE_NAME} -> ${new_ip}"
+        log "INFO" "DNS record updated: ${DNS_RECORD_NAME}.${DNS_ZONE_NAME} -> ${new_ip}"
     else
-        log "ERROR" "DNS record update mislukt (HTTP ${http_code}): ${body}"
+        log "ERROR" "DNS record update failed (HTTP ${http_code}): ${body}"
         exit "${EXIT_DNS}"
     fi
 }
@@ -236,18 +236,18 @@ main() {
     current_ip=$(get_dns_record "$access_token")
 
     if [[ "$current_ip" == "$public_ip" ]] && [[ "$FORCE" -eq 0 ]]; then
-        log "INFO" "IP ongewijzigd (${public_ip})"
+        log "INFO" "IP unchanged (${public_ip})"
         exit "${EXIT_OK}"
     fi
 
     if [[ "$FORCE" -eq 1 ]]; then
-        debug "Force modus: update ongeacht IP-vergelijking"
+        debug "Force mode: updating regardless of IP comparison"
     fi
 
     if [[ -z "$current_ip" ]]; then
-        log "INFO" "Geen bestaand A-record gevonden, wordt aangemaakt"
+        log "INFO" "No existing A record found, creating"
     else
-        log "INFO" "IP gewijzigd: ${current_ip} -> ${public_ip}"
+        log "INFO" "IP changed: ${current_ip} -> ${public_ip}"
     fi
 
     update_dns "$access_token" "$public_ip"
@@ -259,7 +259,7 @@ main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     exec 200>"$LOCK_FILE"
     if ! flock --nonblock 200; then
-        log "WARN" "Andere instantie draait, overgeslagen"
+        log "WARN" "Another instance is running, skipped"
         exit 0
     fi
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 # IP-04: Fallback cascade
-# Verifieert dat get_public_ip() automatisch naar de volgende service schakelt bij falen
+# Verifies that get_public_ip() automatically falls back to the next service on failure
 
 setup() {
     load test_helper
@@ -12,30 +12,30 @@ teardown() {
     teardown_curl_mock
 }
 
-@test "IP-04: eerste service succesvol, tweede niet nodig" {
+@test "IP-04: first service succeeds, second not needed" {
     setup_curl_mock "93.184.216.34" "200"
     run get_public_ip
     [ "$status" -eq 0 ]
     [[ "$output" =~ "93.184.216.34" ]]
 }
 
-@test "IP-04: eerste service geeft HTTP 500, fallback naar tweede" {
+@test "IP-04: first service returns HTTP 500, fallback to second" {
     setup_curl_sequence "error|500" "93.184.216.34|200"
     run get_public_ip
     [ "$status" -eq 0 ]
     [[ "$output" =~ "93.184.216.34" ]]
 }
 
-@test "IP-04: eerste service geeft ongeldig IP, fallback naar tweede" {
+@test "IP-04: first service returns invalid IP, fallback to second" {
     setup_curl_sequence "not-an-ip|200" "10.0.0.1|200"
     run get_public_ip
     [ "$status" -eq 0 ]
     [[ "$output" =~ "10.0.0.1" ]]
 }
 
-@test "IP-04: alle services falen, exit code 2 (EXIT_IP)" {
+@test "IP-04: all services fail, exit code 2 (EXIT_IP)" {
     setup_curl_sequence "error|500" "error|503"
     run get_public_ip
     [ "$status" -eq 2 ]
-    [[ "$output" =~ "Geen geldige IP-service beschikbaar" ]]
+    [[ "$output" =~ "No valid IP service available" ]]
 }

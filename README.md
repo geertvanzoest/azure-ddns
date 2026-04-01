@@ -6,163 +6,163 @@
 [![Platform](https://img.shields.io/badge/platform-Raspberry%20Pi%20%7C%20Linux-blue?logo=linux&logoColor=white)](https://www.raspberrypi.com/)
 [![Azure DNS](https://img.shields.io/badge/Azure%20DNS-REST%20API%202018--05--01-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/en-us/rest/api/dns/)
 
-Een lightweight bash script dat als DDNS-client werkt voor Azure DNS. Het detecteert het publieke IP-adres van het netwerk via een externe service en update een A-record in Azure DNS via de REST API. Ontworpen om als cron job op een Raspberry Pi te draaien met minimale dependencies (bash, curl, jq).
+A lightweight bash script that acts as a DDNS client for Azure DNS. It detects the public IP address of the network via an external service and updates an A record in Azure DNS via the REST API. Designed to run as a cron job on a Raspberry Pi with minimal dependencies (bash, curl, jq).
 
 ## Features
 
-- Automatische IP-detectie met fallback (icanhazip.com -> checkip.amazonaws.com)
-- Slimme update: alleen PUT naar Azure DNS als het IP daadwerkelijk gewijzigd is
-- Lock file (`/tmp/azure-ddns.lock`) voorkomt gelijktijdige runs via `flock`
-- Force modus (`--force`) voor update ongeacht IP-wijziging
-- Debug modus (`VERBOSE=1`) voor uitgebreide logging
-- Configureerbare TTL (`DNS_TTL`, default 300 seconden)
-- Exit codes voor gestructureerde foutafhandeling (0-4)
+- Automatic IP detection with fallback (icanhazip.com -> checkip.amazonaws.com)
+- Smart update: only PUT to Azure DNS when the IP has actually changed
+- Lock file (`/tmp/azure-ddns.lock`) prevents concurrent runs via `flock`
+- Force mode (`--force`) to update regardless of IP change
+- Debug mode (`VERBOSE=1`) for detailed logging
+- Configurable TTL (`DNS_TTL`, default 300 seconds)
+- Exit codes for structured error handling (0-4)
 
 ## Quick Start
 
-1. Installeer dependencies: `sudo apt-get install jq`
-2. Download het script en maak het uitvoerbaar (zie [Installatie](#installatie))
-3. Maak een Azure Service Principal aan (zie [Configuratie](#configuratie))
-4. Stel de environment variables in (zie [Environment variables](#environment-variables))
+1. Install dependencies: `sudo apt-get install jq`
+2. Download the script and make it executable (see [Installation](#installation))
+3. Create an Azure Service Principal (see [Configuration](#configuration))
+4. Set the environment variables (see [Environment variables](#environment-variables))
 5. Test: `./azure-ddns`
-6. Stel een cron job in (zie [Cron job instellen](#cron-job-instellen))
+6. Set up a cron job (see [Setting up a cron job](#setting-up-a-cron-job))
 
-## Vereisten
+## Requirements
 
-| Dependency | Minimale versie | Controle commando | Standaard op Pi? |
-|------------|-----------------|-------------------|------------------|
-| bash | >= 4.x | `bash --version` | Ja |
-| curl | >= 7.68 | `curl --version` | Ja |
-| jq | >= 1.6 | `jq --version` | Nee |
+| Dependency | Minimum version | Check command | Default on Pi? |
+|------------|-----------------|---------------|----------------|
+| bash | >= 4.x | `bash --version` | Yes |
+| curl | >= 7.68 | `curl --version` | Yes |
+| jq | >= 1.6 | `jq --version` | No |
 
-Installeer jq (de enige niet-standaard dependency):
+Install jq (the only non-default dependency):
 
 ```bash
 sudo apt-get install jq
 ```
 
-## Installatie
+## Installation
 
 ```bash
-# Download het script
+# Download the script
 sudo curl -o /usr/local/bin/azure-ddns \
   https://raw.githubusercontent.com/geertvanzoest/azure-ddns/main/azure-ddns
 
-# Maak uitvoerbaar
+# Make executable
 sudo chmod +x /usr/local/bin/azure-ddns
 
-# Controleer
-azure-ddns --help || echo "Geinstalleerd in $(which azure-ddns)"
+# Verify
+azure-ddns --help || echo "Installed at $(which azure-ddns)"
 ```
 
-## Configuratie
+## Configuration
 
-### Azure Service Principal aanmaken
+### Creating an Azure Service Principal
 
-azure-ddns heeft een Azure Service Principal nodig met minimale rechten op de DNS zone. Voer de volgende stappen uit met de Azure CLI (`az`):
+azure-ddns requires an Azure Service Principal with minimal permissions on the DNS zone. Follow these steps using the Azure CLI (`az`):
 
 ```bash
-# 1. App registratie aanmaken
+# 1. Create app registration
 az ad app create --display-name "azure-ddns"
-# Noteer de appId uit de output -> dit wordt AZURE_CLIENT_ID
+# Note the appId from the output -> this becomes AZURE_CLIENT_ID
 ```
 
 ```bash
-# 2. Service Principal aanmaken
+# 2. Create Service Principal
 az ad sp create --id <APP_ID>
 ```
 
 ```bash
-# 3. Client secret genereren
+# 3. Generate client secret
 az ad app credential reset --id <APP_ID> --display-name "azure-ddns-secret"
-# Noteer password uit de output -> dit wordt AZURE_CLIENT_SECRET
-# Noteer tenant uit de output -> dit wordt AZURE_TENANT_ID
+# Note password from the output -> this becomes AZURE_CLIENT_SECRET
+# Note tenant from the output -> this becomes AZURE_TENANT_ID
 ```
 
 ```bash
-# 4. DNS Zone Contributor rol toekennen (scope op zone niveau)
+# 4. Assign DNS Zone Contributor role (scoped to zone level)
 az role assignment create \
   --assignee <APP_ID> \
   --role "DNS Zone Contributor" \
-  --scope "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.Network/dnsZones/<ZONE_NAAM>"
+  --scope "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.Network/dnsZones/<ZONE_NAME>"
 ```
 
-De scope is bewust beperkt tot de specifieke DNS zone. De Service Principal krijgt hiermee alleen rechten op die ene zone, niet op de hele subscription of resource group.
+The scope is intentionally limited to the specific DNS zone. The Service Principal only receives permissions on that single zone, not on the entire subscription or resource group.
 
 ### Environment variables
 
-| Variabele | Verplicht | Beschrijving | Voorbeeld |
-|-----------|-----------|--------------|-----------|
-| `AZURE_TENANT_ID` | Ja | Microsoft Entra tenant GUID | `aaaabbbb-0000-cccc-1111-dddd2222eeee` |
-| `AZURE_CLIENT_ID` | Ja | Service Principal application ID | `11112222-bbbb-3333-cccc-4444dddd5555` |
-| `AZURE_CLIENT_SECRET` | Ja | Service Principal secret | `A1bC2dE3fH4iJ5kL6mN7oP8qR9sT0u` |
-| `AZURE_SUBSCRIPTION_ID` | Ja | Azure subscription GUID | `00000000-0000-0000-0000-000000000000` |
-| `AZURE_RESOURCE_GROUP` | Ja | Resource group van de DNS zone | `rg-dns` |
-| `DNS_ZONE_NAME` | Ja | DNS zone naam (zonder trailing dot) | `example.com` |
-| `DNS_RECORD_NAME` | Ja | Relatieve recordnaam | `home` (resulteert in `home.example.com`) |
-| `DNS_TTL` | Nee | TTL in seconden (default: 300) | `300` |
+| Variable | Required | Description | Example |
+|----------|----------|-------------|---------|
+| `AZURE_TENANT_ID` | Yes | Microsoft Entra tenant GUID | `aaaabbbb-0000-cccc-1111-dddd2222eeee` |
+| `AZURE_CLIENT_ID` | Yes | Service Principal application ID | `11112222-bbbb-3333-cccc-4444dddd5555` |
+| `AZURE_CLIENT_SECRET` | Yes | Service Principal secret | `A1bC2dE3fH4iJ5kL6mN7oP8qR9sT0u` |
+| `AZURE_SUBSCRIPTION_ID` | Yes | Azure subscription GUID | `00000000-0000-0000-0000-000000000000` |
+| `AZURE_RESOURCE_GROUP` | Yes | Resource group of the DNS zone | `rg-dns` |
+| `DNS_ZONE_NAME` | Yes | DNS zone name (without trailing dot) | `example.com` |
+| `DNS_RECORD_NAME` | Yes | Relative record name | `home` (results in `home.example.com`) |
+| `DNS_TTL` | No | TTL in seconds (default: 300) | `300` |
 
-**Methode 1: Via `/etc/environment`** (persistent, alle gebruikers)
+**Method 1: Via `/etc/environment`** (persistent, all users)
 
-Voeg de variabelen toe aan `/etc/environment`:
+Add the variables to `/etc/environment`:
 
 ```bash
 sudo tee -a /etc/environment << 'EOF'
-AZURE_TENANT_ID=<JOUW_TENANT_ID>
-AZURE_CLIENT_ID=<JOUW_CLIENT_ID>
-AZURE_CLIENT_SECRET=<JOUW_CLIENT_SECRET>
-AZURE_SUBSCRIPTION_ID=<JOUW_SUBSCRIPTION_ID>
-AZURE_RESOURCE_GROUP=<JOUW_RESOURCE_GROUP>
-DNS_ZONE_NAME=<JOUW_ZONE>
-DNS_RECORD_NAME=<JOUW_RECORD>
+AZURE_TENANT_ID=<YOUR_TENANT_ID>
+AZURE_CLIENT_ID=<YOUR_CLIENT_ID>
+AZURE_CLIENT_SECRET=<YOUR_CLIENT_SECRET>
+AZURE_SUBSCRIPTION_ID=<YOUR_SUBSCRIPTION_ID>
+AZURE_RESOURCE_GROUP=<YOUR_RESOURCE_GROUP>
+DNS_ZONE_NAME=<YOUR_ZONE>
+DNS_RECORD_NAME=<YOUR_RECORD>
 EOF
 ```
 
-**Methode 2: Via crontab** (alleen voor cron, zie [Cron job instellen](#cron-job-instellen))
+**Method 2: Via crontab** (cron only, see [Setting up a cron job](#setting-up-a-cron-job))
 
-De variabelen worden direct in de crontab-regel gezet. Zie het voorbeeld hieronder.
+The variables are set directly in the crontab entry. See the example below.
 
-> **Waarschuwing:** Sla secrets NOOIT op in het script zelf. Gebruik altijd environment variables.
+> **Warning:** NEVER store secrets in the script itself. Always use environment variables.
 
-## Gebruik
+## Usage
 
-### Handmatig draaien
+### Running manually
 
 ```bash
-# Normaal (update alleen als IP gewijzigd is)
+# Normal (only updates if IP has changed)
 ./azure-ddns
 
-# Force update (altijd updaten, ongeacht IP-wijziging)
+# Force update (always update, regardless of IP change)
 ./azure-ddns --force
 
-# Debug modus (uitgebreide logging)
+# Debug mode (detailed logging)
 VERBOSE=1 ./azure-ddns
 
-# Combinatie: force update met debug output
+# Combination: force update with debug output
 VERBOSE=1 ./azure-ddns --force
 ```
 
-### Cron job instellen
+### Setting up a cron job
 
-Open de crontab:
+Open the crontab:
 
 ```bash
 crontab -e
 ```
 
-Voeg een regel toe om het script elke 5 minuten te draaien:
+Add an entry to run the script every 5 minutes:
 
 ```bash
 */5 * * * * AZURE_TENANT_ID=xxx AZURE_CLIENT_ID=xxx AZURE_CLIENT_SECRET=xxx AZURE_SUBSCRIPTION_ID=xxx AZURE_RESOURCE_GROUP=xxx DNS_ZONE_NAME=xxx DNS_RECORD_NAME=xxx /usr/local/bin/azure-ddns >> /var/log/azure-ddns.log 2>&1
 ```
 
-Als de environment variables al in `/etc/environment` staan, volstaat:
+If the environment variables are already in `/etc/environment`, this suffices:
 
 ```bash
 */5 * * * * /usr/local/bin/azure-ddns >> /var/log/azure-ddns.log 2>&1
 ```
 
-De output wordt naar `/var/log/azure-ddns.log` geschreven voor troubleshooting. Maak het logbestand aan als het nog niet bestaat:
+Output is written to `/var/log/azure-ddns.log` for troubleshooting. Create the log file if it doesn't exist yet:
 
 ```bash
 sudo touch /var/log/azure-ddns.log
@@ -171,66 +171,66 @@ sudo chown $(whoami) /var/log/azure-ddns.log
 
 ### Lock file
 
-Het script gebruikt `/tmp/azure-ddns.lock` via `flock` om te voorkomen dat twee instanties tegelijk draaien. Als een vorige run nog bezig is, wordt de nieuwe run overgeslagen met de melding "Andere instantie draait, overgeslagen". Hier is geen actie van de gebruiker voor nodig.
+The script uses `/tmp/azure-ddns.lock` via `flock` to prevent two instances from running simultaneously. If a previous run is still in progress, the new run is skipped with the message "Another instance is running, skipped". No user action is required.
 
 ## Troubleshooting
 
 ### Exit codes
 
-| Code | Constante | Betekenis | Mogelijke oorzaken | Oplossing |
-|------|-----------|-----------|--------------------|-----------| 
-| 0 | EXIT_OK | Succes | - | Geen actie nodig |
-| 1 | EXIT_CONFIG | Configuratiefout | Ontbrekende env var, jq niet geinstalleerd | Controleer alle verplichte env vars, installeer jq |
-| 2 | EXIT_IP | IP-detectie mislukt | Geen internet, IP-services onbereikbaar | Controleer internetverbinding, test `curl https://icanhazip.com` |
-| 3 | EXIT_AUTH | Authenticatie mislukt | Onjuiste credentials, verlopen secret, verkeerde tenant | Controleer AZURE_TENANT_ID/CLIENT_ID/CLIENT_SECRET, vernieuw secret |
-| 4 | EXIT_DNS | DNS-operatie mislukt | Onvoldoende rechten, verkeerde zone/record naam | Controleer RBAC-rol, resource group, zone naam |
+| Code | Constant | Meaning | Possible causes | Solution |
+|------|----------|---------|-----------------|----------|
+| 0 | EXIT_OK | Success | - | No action needed |
+| 1 | EXIT_CONFIG | Configuration error | Missing env var, jq not installed | Check all required env vars, install jq |
+| 2 | EXIT_IP | IP detection failed | No internet, IP services unreachable | Check internet connection, test `curl https://icanhazip.com` |
+| 3 | EXIT_AUTH | Authentication failed | Invalid credentials, expired secret, wrong tenant | Check AZURE_TENANT_ID/CLIENT_ID/CLIENT_SECRET, renew secret |
+| 4 | EXIT_DNS | DNS operation failed | Insufficient permissions, wrong zone/record name | Check RBAC role, resource group, zone name |
 
-Controleer de exit code na een run:
+Check the exit code after a run:
 
 ```bash
 ./azure-ddns; echo "Exit code: $?"
 ```
 
-### Debug modus
+### Debug mode
 
-Gebruik `VERBOSE=1` voor uitgebreide logging:
+Use `VERBOSE=1` for detailed logging:
 
 ```bash
 VERBOSE=1 ./azure-ddns
 ```
 
-Dit toont:
-- Welke configuratie geladen is
+This shows:
+- Which configuration is loaded
 - OAuth2 token status
-- Welke IP-service gebruikt wordt en het gedetecteerde IP
-- Vergelijking van huidig DNS record met het nieuwe IP
+- Which IP service is used and the detected IP
+- Comparison of current DNS record with the new IP
 - DNS update payload
 
-### Veelvoorkomende problemen
+### Common issues
 
-**"Andere instantie draait, overgeslagen"**
+**"Another instance is running, skipped"**
 
-Een vorige run is nog bezig. Wacht tot deze klaar is. Controleer of er een actief proces draait:
+A previous run is still in progress. Wait for it to finish. Check if there's an active process:
 
 ```bash
 ps aux | grep azure-ddns
 ```
 
-Als er geen proces draait maar de melding blijft komen, herstart de Pi of wacht tot de volgende reboot (flock wordt automatisch vrijgegeven bij proceseinde).
+If no process is running but the message persists, restart the Pi or wait until the next reboot (flock is automatically released when the process ends).
 
-**HTTP 401 bij token request (exit code 3)**
+**HTTP 401 on token request (exit code 3)**
 
-De client secret is verlopen of onjuist. Genereer een nieuw secret:
+The client secret has expired or is incorrect. Generate a new secret:
 
 ```bash
 az ad app credential reset --id <APP_ID> --display-name "azure-ddns-secret"
 ```
 
-Werk vervolgens `AZURE_CLIENT_SECRET` bij in de environment variables.
+Then update `AZURE_CLIENT_SECRET` in the environment variables.
 
-**HTTP 403 bij DNS update (exit code 4)**
+**HTTP 403 on DNS update (exit code 4)**
 
-De DNS Zone Contributor rol is niet (correct) toegekend. Controleer de roltoekenning:
+The DNS Zone Contributor role is not (correctly) assigned. Check the role assignment:
 
 ```bash
 az role assignment list \
@@ -238,33 +238,33 @@ az role assignment list \
   --scope "/subscriptions/<SUB_ID>/resourceGroups/<RG>/providers/Microsoft.Network/dnsZones/<ZONE>"
 ```
 
-Wijs de rol opnieuw toe als deze ontbreekt (zie [Azure Service Principal aanmaken](#azure-service-principal-aanmaken)).
+Reassign the role if it's missing (see [Creating an Azure Service Principal](#creating-an-azure-service-principal)).
 
-**Geen IP gedetecteerd (exit code 2)**
+**No IP detected (exit code 2)**
 
-Controleer of de Pi uitgaand HTTPS-verkeer kan versturen:
+Check if the Pi can send outbound HTTPS traffic:
 
 ```bash
 curl -s https://icanhazip.com
 curl -s https://checkip.amazonaws.com
 ```
 
-Als beide falen, controleer de internetverbinding en eventuele firewall-regels.
+If both fail, check the internet connection and any firewall rules.
 
-## IP-services
+## IP services
 
-azure-ddns probeert achtereenvolgens de volgende services om het publieke IP-adres te detecteren:
+azure-ddns tries the following services to detect the public IP address:
 
-| Volgorde | Service | URL | Eigenaar |
-|----------|---------|-----|----------|
-| 1 (primair) | icanhazip.com | `https://icanhazip.com` | Cloudflare |
+| Order | Service | URL | Owner |
+|-------|---------|-----|-------|
+| 1 (primary) | icanhazip.com | `https://icanhazip.com` | Cloudflare |
 | 2 (fallback) | checkip.amazonaws.com | `https://checkip.amazonaws.com` | Amazon AWS |
 
-Als de primaire service niet bereikbaar is, wordt automatisch de fallback gebruikt.
+If the primary service is unreachable, the fallback is used automatically.
 
-## Technische details
+## Technical details
 
-- **Azure DNS REST API versie:** 2018-05-01 (huidige stabiele GA release)
+- **Azure DNS REST API version:** 2018-05-01 (current stable GA release)
 - **OAuth2 flow:** Client credentials grant via Microsoft Entra
 - **Token endpoint:** `https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token`
-- **IP-validatie:** Strikte IPv4 regex-validatie op responses van IP-services
+- **IP validation:** Strict IPv4 regex validation on IP service responses

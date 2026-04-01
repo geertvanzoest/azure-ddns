@@ -1,17 +1,17 @@
-# Gedragscode
+# Code of Conduct
 
-## Onze belofte
+## Our pledge
 
-Wij streven naar een open en gastvrije omgeving. Iedereen die bijdraagt aan dit project wordt met respect behandeld, ongeacht achtergrond of ervaring.
+We strive for an open and welcoming environment. Everyone who contributes to this project is treated with respect, regardless of background or experience.
 
-## Verwachtingen
+## Expectations
 
-- Wees respectvol en constructief in communicatie
-- Accepteer constructieve feedback
-- Focus op wat het beste is voor het project
+- Be respectful and constructive in communication
+- Accept constructive feedback
+- Focus on what is best for the project
 
-## Handhaving
+## Enforcement
 
-Ongepast gedrag kan gemeld worden via een [privé security advisory](https://github.com/geertvanzoest/azure-ddns/security/advisories). De beheerder beoordeelt en handelt naar eigen inzicht.
+Inappropriate behavior can be reported via a [private security advisory](https://github.com/geertvanzoest/azure-ddns/security/advisories). The maintainer will review and act at their discretion.
 
-Dit project volgt de [Contributor Covenant](https://www.contributor-covenant.org/) als leidraad.
+This project follows the [Contributor Covenant](https://www.contributor-covenant.org/) as a guideline.
